@@ -2,11 +2,13 @@
 
 # Hi, I'm Abu Huraira 👋
 
-I am a **Software Engineer and .NET Developer** with over **3 years of professional experience** building scalable web applications, RESTful APIs, and data-driven systems using **C#, ASP.NET Core, Angular, SQL, and modern software engineering practices**.
+I am a **Software Engineer and .NET Developer** with over **3 years of professional experience** building scalable web applications, RESTful APIs, enterprise integrations, and data-driven systems using **C#, ASP.NET Core, Angular, SQL Server, Docker, and Microsoft Azure**.
 
-Alongside my professional software development experience, I have developed a strong interest in **Data Science, Machine Learning, Artificial Intelligence, and intelligent software systems**. I am actively strengthening my skills in **Python, data analysis, statistical methods, machine learning algorithms, and data preprocessing**.
+Alongside my professional software development experience, I have developed a strong interest in **Data Science, Machine Learning, Artificial Intelligence, and intelligent software systems**.
 
-My goal is to combine my strong background in **software engineering, backend development, databases, APIs, algorithms, and system design** with modern **Data Science and Machine Learning** techniques to build reliable, intelligent, and scalable software systems.
+I am actively strengthening my skills in **Python, data analysis, statistical methods, machine learning algorithms, data preprocessing, and model evaluation**.
+
+My goal is to combine my background in **software engineering, backend development, databases, APIs, algorithms, and system design** with modern **Data Science and Machine Learning** techniques to build reliable, intelligent, and scalable software systems.
 
 ---
 
@@ -14,15 +16,39 @@ My goal is to combine my strong background in **software engineering, backend de
 
 ### Programming Languages
 
-- **Python**
 - **C#**
-- C / C++
+- **Python**
 - JavaScript
 - SQL
+- C / C++
 
-### Machine Learning & Data Science
+### Backend Development
 
-- **Machine Learning Fundamentals**
+- **ASP.NET Core**
+- **.NET Web APIs**
+- RESTful APIs
+- API Integration
+- Authentication & Authorization
+- Dependency Injection
+- Middleware
+- Background Services
+- Exception Handling
+- JSON / HTTP-based Integrations
+
+### Frontend Technologies
+
+- **Angular**
+- JavaScript
+- jQuery
+- HTML5
+- CSS3
+- Bootstrap
+
+---
+
+## 🤖 Machine Learning & Data Science
+
+- Machine Learning Fundamentals
 - Supervised Learning
 - Unsupervised Learning
 - Regression
@@ -45,7 +71,9 @@ My goal is to combine my strong background in **software engineering, backend de
 - **Scikit-learn**
 - Jupyter Notebook
 
-### Mathematics & Analytical Foundations
+---
+
+## 📐 Mathematics & Analytical Foundations
 
 - Probability & Statistics
 - Linear Algebra
@@ -67,41 +95,6 @@ My goal is to combine my strong background in **software engineering, backend de
 - Data Cleaning & Validation
 - Relational Data Processing
 - Query Optimization
-
----
-
-## 💻 Backend & Web Development
-
-- **ASP.NET Core**
-- **.NET Web APIs**
-- RESTful APIs
-- JSON
-- Authentication & Authorization
-- Background Services
-- API Integration
-- Dependency Injection
-- Middleware
-- Exception Handling
-
----
-
-## 🧩 Frameworks & Runtimes
-
-- **.NET Framework**
-- **.NET Core / Modern .NET**
-- ASP.NET Boilerplate
-- Microsoft Boilerplate Templates
-
----
-
-## 🌐 Frontend Technologies
-
-- **Angular**
-- JavaScript
-- jQuery
-- HTML5
-- CSS3
-- Bootstrap
 
 ---
 
@@ -162,8 +155,8 @@ My goal is to combine my strong background in **software engineering, backend de
 - GitHub
 - Visual Studio
 - VS Code
-- Jupyter Notebook
 - Postman
+- Jupyter Notebook
 
 ---
 
@@ -176,6 +169,8 @@ My goal is to combine my strong background in **software engineering, backend de
 - Team Collaboration
 - Code Reviews
 - Requirement Analysis
+- Production Support
+- Troubleshooting
 
 ---
 
@@ -290,7 +285,7 @@ The competition strengthened my abilities in:
 
 **Completed in 2022**
 
-My undergraduate studies provided foundations in areas including:
+My undergraduate studies provided foundations in:
 
 - Programming
 - Data Structures & Algorithms
@@ -327,16 +322,23 @@ My long-term objective is to combine my professional background in **Software En
 
 ---
 
-## 📊 GitHub Statistics
+## 📊 GitHub Activity
 
-[![Abu Huraira's GitHub Stats](https://github-readme-stats.vercel.app/api?username=AbuHuraira125&show_icons=true&custom_title=Abu%20Huraira%27s%20GitHub%20Stats)](https://github.com/AbuHuraira125)
+My GitHub profile includes contributions across **public and private repositories**, including professional software development, backend engineering, integrations, code reviews, and collaborative development work.
 
-### Most Used Languages
+👉 **GitHub Profile:**  
+[github.com/AbuHurairaPhenologix](https://github.com/AbuHurairaPhenologix)
 
-[![Abu Huraira's Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=AbuHuraira125&layout=compact&custom_title=Abu%20Huraira%27s%20Most%20Used%20Languages)](https://github.com/AbuHuraira125)
+> Private contribution visibility is enabled on my GitHub profile. GitHub displays contribution activity while keeping private repository names and source code confidential.
 
 ---
 
 ## 🎯 Profile Focus
 
 **Software Engineering** • **.NET** • **C#** • **Python** • **Data Science** • **Machine Learning** • **SQL** • **Artificial Intelligence**
+
+---
+
+## 🔗 Connect
+
+- **GitHub:** [AbuHurairaPhenologix](https://github.com/AbuHurairaPhenologix)
