@@ -1,0 +1,5 @@
+model,auth_failure_burst,dependency_instability,error_burst,latency_spike,retry_burst,traffic_surge
+Isolation Forest,0.3733,0.2000,0.4133,0.9467,0.1733,0.3600
+Local Outlier Factor,0.5467,0.0400,0.6800,0.8533,0.0533,1.0000
+One-Class SVM,0.5733,0.1200,0.7733,0.8667,0.1067,1.0000
+Random Forest (supervised ref.),0.6133,0.0133,0.9467,0.9200,0.0133,1.0000

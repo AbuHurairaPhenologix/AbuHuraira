@@ -1,0 +1,19 @@
+{
+  "windowId": "5c7151f0-7f65-4d34-bf80-2bfa6507b66c",
+  "service": "identity-api",
+  "environment": "production",
+  "windowStartUtc": "2022-02-15T14:30:00Z",
+  "windowEndUtc": "2022-02-15T14:35:00Z",
+  "modelVersion": "<registered-version>",
+  "schemaVersion": "ops-v1",
+  "features": {
+    "request_count": 142,
+    "error_rate": 0.031,
+    "avg_duration_ms": 248.4,
+    "p95_duration_ms": 681.7,
+    "auth_failure_rate": 0.017,
+    "dependency_failure_count": 1,
+    "retry_count": 0,
+    "endpoint_entropy": 2.31
+  }
+}

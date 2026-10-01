@@ -1,0 +1,108 @@
+{
+  "modelId": "5eac614b-d784-41f8-8b41-2a54ed9f3cc6",
+  "modelVersion": "if-ops-v1-20261001t124738z",
+  "algorithm": "isolation_forest",
+  "displayName": "Isolation Forest",
+  "featureSchemaVersion": "ops-v1",
+  "featureNames": [
+    "request_count",
+    "error_rate",
+    "avg_duration_ms",
+    "p95_duration_ms",
+    "auth_failure_rate",
+    "dependency_failure_count",
+    "retry_count",
+    "endpoint_entropy"
+  ],
+  "trainingPeriodStartUtc": "2022-01-03T00:00:00Z",
+  "trainingPeriodEndUtc": "2022-01-17T16:05:00Z",
+  "trainingWindows": 16000,
+  "randomSeed": 20220215,
+  "libraryVersions": {
+    "python": "3.12.3",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0",
+    "matplotlib": "3.11.2",
+    "fastapi": "0.142.2",
+    "pydantic": "2.13.5"
+  },
+  "parameters": {
+    "n_estimators": 300,
+    "max_samples": 256,
+    "contamination": "auto",
+    "scaling": "none",
+    "trainingSubset": null
+  },
+  "validationThreshold": 0.03445155732114671,
+  "thresholdObjective": "max_f1",
+  "thresholdQuantile": 0.944407949790795,
+  "productionEligible": true,
+  "validationMetrics": {
+    "quantile": 0.944407949790795,
+    "threshold": 0.03445155732114671,
+    "precision": 0.30359937402190923,
+    "recall": 0.4311111111111111,
+    "f1": 0.3562901744719926,
+    "fpr": 0.055625,
+    "tp": 194,
+    "fp": 445,
+    "tn": 7555,
+    "fn": 256,
+    "alerts_per_1000_windows": 75.62130177514793,
+    "alerts_per_service_day": 21.778934911242604,
+    "rocAuc": 0.8080163888888888,
+    "prAuc": 0.28170462702578897,
+    "libraryDefaultDecision": {
+      "tp": 276,
+      "fp": 963,
+      "tn": 7037,
+      "fn": 174
+    }
+  },
+  "baseline": {
+    "request_count": {
+      "mean": 139.8685625,
+      "std": 11.780154357375531
+    },
+    "error_rate": {
+      "mean": 0.019998959437499998,
+      "std": 0.01398426460749428
+    },
+    "avg_duration_ms": {
+      "mean": 249.70690362499997,
+      "std": 62.93295161063747
+    },
+    "p95_duration_ms": {
+      "mean": 648.6346434375,
+      "std": 176.11582357496528
+    },
+    "auth_failure_rate": {
+      "mean": 0.0150318601875,
+      "std": 0.012223884404834863
+    },
+    "dependency_failure_count": {
+      "mean": 0.1515625,
+      "std": 0.41453746343816744
+    },
+    "retry_count": {
+      "mean": 0.1014375,
+      "std": 0.33376328976349395
+    },
+    "endpoint_entropy": {
+      "mean": 2.3011644729375,
+      "std": 0.11988741211964672
+    }
+  },
+  "createdAtUtc": "2026-10-01T12:47:39Z",
+  "trainingRunId": "20261001t124738z",
+  "trainingSource": "benchmark",
+  "configSha256": "ae708426ee5f85739b204a290c456c3fa833ec5aa5ad5e7ef2b4a9e1ca962d1a",
+  "datasetSha256": "c3dc2fe341c6063d904fcf5adcc362aa02a4fdce960a7fbf53e48b88bf919e5d",
+  "requestedBy": "cli",
+  "recommended": false,
+  "artifactPath": "if-ops-v1-20261001t124738z/model.joblib",
+  "artifactSha256": "94ba4f9987c9f52766cdafcdca62fe0cae28085963af1f691d9f1ba954f479e4"
+}

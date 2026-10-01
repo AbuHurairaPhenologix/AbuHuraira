@@ -1,0 +1,74 @@
+# Reproducibility manifest for the synthetic benchmark (report §4.12, §5.2).
+# Referenced by dataset generation, training, evaluation and the ML service. Changing any value changes the
+# config hash recorded in every model's metadata and evaluation run.
+
+manifest_version: 1
+benchmark_name: ops-v1-synthetic-benchmark
+random_seed: 20220215
+feature_schema_version: ops-v1
+window_minutes: 5
+
+# Synthetic windows are assigned to these services in round-robin time slots (5-minute windows).
+services: [identity-api, orders-api, catalog-api, payments-api]
+environment: production
+start_utc: "2022-01-03T00:00:00Z"
+
+dataset:
+  output_dir: data/generated
+  n_normal: 32000
+  n_anomaly: 1800
+  # Normal baseline (report §5.2). Parameters are engineering assumptions, not estimates of a real system.
+  normal:
+    request_count: {distribution: poisson, lambda: 140}
+    avg_duration_ms: {distribution: lognormal, mean_ms: 250, sigma: 0.25}
+    p95_duration_ms: {ratio_mean: 2.6, ratio_std: 0.25, min_ratio_over_mean: 1.05}
+    error_rate: {distribution: beta, mean: 0.02, concentration: 100}
+    auth_failure_rate: {distribution: beta, mean: 0.015, concentration: 100}
+    dependency_failure_count: {distribution: zero_inflated_poisson, mean: 0.15, zero_inflation: 0.5}
+    retry_count: {distribution: zero_inflated_poisson, mean: 0.10, zero_inflation: 0.5}
+    endpoint_entropy: {distribution: bounded_normal, mean: 2.3, std: 0.12, min: 0.0, max: 3.0}
+  # Controlled anomaly classes (report §5.2). Equal weights → 300 windows per class.
+  anomalies:
+    latency_spike: {weight: 1, duration_multiplier: [2.5, 4.0]}
+    auth_failure_burst: {weight: 1, rate_multiplier: [6.0, 10.0]}
+    dependency_instability: {weight: 1, rate_multiplier: 5.0, latency_multiplier: [1.0, 1.3]}
+    retry_burst: {weight: 1, rate_multiplier: 5.0}
+    traffic_surge: {weight: 1, intensity_multiplier: [1.8, 2.2], entropy_multiplier: [0.8, 0.95]}
+    error_burst: {weight: 1, error_rate_mean: [0.10, 0.15]}
+
+# Chronological split: validation and test periods occur later in time than training (report §3.9).
+splits:
+  train: {normal: 16000, anomaly: 900}       # anomalies here are used ONLY by the supervised Random Forest reference
+  validation: {normal: 8000, anomaly: 450}   # threshold selection
+  test: {normal: 8000, anomaly: 450}         # untouched until model + threshold selection are complete
+
+models:
+  isolation_forest:
+    production_eligible: true
+    scaling: none            # report §5.3: Isolation Forest uses the original numerical representation
+    params: {n_estimators: 300, max_samples: 256, contamination: auto}
+  lof:
+    production_eligible: true
+    scaling: standard
+    params: {n_neighbors: 35, novelty: true, contamination: auto}
+  ocsvm:
+    production_eligible: true
+    scaling: standard
+    training_subset: 6000    # report §2.5: trained on a representative subset of normal windows
+    params: {kernel: rbf, nu: 0.04, gamma: scale}
+  random_forest:
+    production_eligible: false   # supervised benchmark reference only
+    scaling: none
+    params: {n_estimators: 300, min_samples_leaf: 2, class_weight: balanced}
+
+threshold:
+  # Candidate thresholds are quantiles of the NORMAL validation-score distribution (report §3.10).
+  objective: max_f1            # alternatives: max_recall_at_fpr
+  target_fpr: 0.01             # used by max_recall_at_fpr and for unlabelled feature-window retraining
+  candidate_quantiles: {start: 0.80, stop: 0.9995, num: 240}
+  windows_per_service_day: 288 # review-burden conversion for 5-minute windows
+
+registry:
+  models_dir: artifacts/models
+evaluation:
+  output_dir: artifacts/evaluations

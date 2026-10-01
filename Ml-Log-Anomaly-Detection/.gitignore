@@ -1,0 +1,28 @@
+# Secrets
+.env
+
+# .NET
+**/bin/
+**/obj/
+*.user
+.vs/
+TestResults/
+
+# Python
+**/.venv/
+**/__pycache__/
+.pytest_cache/
+*.pyc
+
+# Node / Angular
+src/frontend/node_modules/
+src/frontend/dist/
+src/frontend/.angular/
+
+# Generated data (reproducible from config/benchmark.yaml)
+data/generated/*
+!data/generated/.gitkeep
+
+# IDE
+.idea/
+.vscode/
