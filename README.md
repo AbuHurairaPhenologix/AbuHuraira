@@ -2,7 +2,7 @@
 
 # Hi, I'm Abu Huraira 👋
 
-I am a **Software Engineer and .NET Developer** with over **3 years of professional experience** building scalable web applications, RESTful APIs, enterprise integrations, and data-driven systems using **C#, ASP.NET Core, Angular, SQL Server, Docker, and Microsoft Azure**.
+I am a **Software Engineer and .NET Developer** with over **4 years of professional experience** building scalable web applications, RESTful APIs, enterprise integrations, and data-driven systems using **C#, ASP.NET Core, Angular, SQL Server, Docker, and Microsoft Azure**.
 
 Alongside my professional software development experience, I have developed a strong interest in **Data Science, Machine Learning, Artificial Intelligence, and intelligent software systems**.
 
@@ -320,13 +320,6 @@ I am currently expanding my knowledge in:
 
 My long-term objective is to combine my professional background in **Software Engineering and distributed applications** with advanced expertise in **Data Science and Machine Learning** to build intelligent, scalable, and data-driven systems.
 
----
-
-# 📊 GitHub Statistics
-
-## 🔥 GitHub Contribution Streak
-
-[![GitHub Streak](https://streak-stats.demolab.com?user=AbuHurairaPhenologix&hide_border=true&date_format=M%20j%5B%2C%20Y%5D)](https://git.io/streak-stats)
 
 ---
 
