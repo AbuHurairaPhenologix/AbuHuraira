@@ -342,16 +342,15 @@ My long-term objective is to combine my professional background in **Software En
 
 ---
 
-## 📈 GitHub Contribution Activity
+## 📊 GitHub Activity
 
-[![Abu Huraira's GitHub Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=AbuHurairaPhenologix&hide_border=true&area=true)](https://github.com/AbuHurairaPhenologix)
+My GitHub profile includes contributions across **public and private repositories**, including professional software development, backend engineering, integrations, code reviews, and collaborative development work.
 
----
+### 🔥 Contribution Activity
 
-## 👀 Profile Views
+[![View GitHub Contributions](https://img.shields.io/badge/View%20My%20GitHub%20Contributions-728%2B%20Contributions-181717?style=for-the-badge&logo=github)](https://github.com/AbuHurairaPhenologix#year-list-container)
 
-![Profile Views](https://komarev.com/ghpvc/?username=AbuHurairaPhenologix&label=Profile%20Views)
-
+> Private contribution visibility is enabled on my GitHub profile. GitHub displays contribution activity while keeping private repository names and source code confidential.
 ---
 
 ## 🎯 Profile Focus
