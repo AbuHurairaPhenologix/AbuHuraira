@@ -8,7 +8,7 @@ Alongside my professional software development experience, I have developed a st
 
 I am actively strengthening my skills in **Python, data analysis, statistical methods, machine learning algorithms, data preprocessing, and model evaluation**.
 
-My goal is to combine my background in **software engineering, backend development, databases, APIs, algorithms, and system design** with modern **Data Science and Machine Learning** techniques to build reliable, intelligent, and scalable software systems.
+My goal is to combine my background in **Software Engineering, Backend Development, Databases, APIs, Algorithms, and System Design** with modern **Data Science and Machine Learning** techniques to build reliable, intelligent, and scalable software systems.
 
 ---
 
@@ -33,7 +33,7 @@ My goal is to combine my background in **software engineering, backend developme
 - Middleware
 - Background Services
 - Exception Handling
-- JSON / HTTP-based Integrations
+- JSON / HTTP Integrations
 
 ### Frontend Technologies
 
@@ -322,14 +322,35 @@ My long-term objective is to combine my professional background in **Software En
 
 ---
 
-## 📊 GitHub Activity
+# 📊 GitHub Statistics
 
-My GitHub profile includes contributions across **public and private repositories**, including professional software development, backend engineering, integrations, code reviews, and collaborative development work.
+## 🔥 GitHub Contribution Streak
 
-👉 **GitHub Profile:**  
-[github.com/AbuHurairaPhenologix](https://github.com/AbuHurairaPhenologix)
+[![GitHub Streak](https://streak-stats.demolab.com?user=AbuHurairaPhenologix&hide_border=true&date_format=M%20j%5B%2C%20Y%5D)](https://git.io/streak-stats)
 
-> Private contribution visibility is enabled on my GitHub profile. GitHub displays contribution activity while keeping private repository names and source code confidential.
+---
+
+## 📈 GitHub Stats
+
+[![Abu Huraira's GitHub Stats](https://github-readme-stats.vercel.app/api?username=AbuHurairaPhenologix&show_icons=true&include_all_commits=true&count_private=true&hide_border=true&custom_title=Abu%20Huraira%27s%20GitHub%20Stats)](https://github.com/AbuHurairaPhenologix)
+
+---
+
+## 💻 Most Used Languages
+
+[![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=AbuHurairaPhenologix&layout=compact&hide_border=true&langs_count=10&custom_title=Most%20Used%20Languages)](https://github.com/AbuHurairaPhenologix)
+
+---
+
+## 📈 GitHub Contribution Activity
+
+[![Abu Huraira's GitHub Activity Graph](https://github-readme-activity-graph.vercel.app/graph?username=AbuHurairaPhenologix&hide_border=true&area=true)](https://github.com/AbuHurairaPhenologix)
+
+---
+
+## 👀 Profile Views
+
+![Profile Views](https://komarev.com/ghpvc/?username=AbuHurairaPhenologix&label=Profile%20Views)
 
 ---
 
@@ -339,6 +360,6 @@ My GitHub profile includes contributions across **public and private repositorie
 
 ---
 
-## 🔗 Connect
+## 🔗 GitHub Profile
 
-- **GitHub:** [AbuHurairaPhenologix](https://github.com/AbuHurairaPhenologix)
+[![GitHub](https://img.shields.io/badge/GitHub-AbuHurairaPhenologix-181717?logo=github)](https://github.com/AbuHurairaPhenologix)
