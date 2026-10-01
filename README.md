@@ -330,17 +330,7 @@ My long-term objective is to combine my professional background in **Software En
 
 ---
 
-## 📈 GitHub Stats
 
-[![Abu Huraira's GitHub Stats](https://github-readme-stats.vercel.app/api?username=AbuHurairaPhenologix&show_icons=true&include_all_commits=true&count_private=true&hide_border=true&custom_title=Abu%20Huraira%27s%20GitHub%20Stats)](https://github.com/AbuHurairaPhenologix)
-
----
-
-## 💻 Most Used Languages
-
-[![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=AbuHurairaPhenologix&layout=compact&hide_border=true&langs_count=10&custom_title=Most%20Used%20Languages)](https://github.com/AbuHurairaPhenologix)
-
----
 
 ## 📊 GitHub Activity
 
