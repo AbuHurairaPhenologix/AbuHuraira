@@ -3,9 +3,6 @@
 ### Software-Defined Vehicle Platform for Real-Time Telemetry, Diagnostics & Secure OTA Updates
 
 <p align="center">
-  <a href="https://github.com/AbuHurairaPhenologix/autosphere-sdv-platform/actions/workflows/ci.yml">
-    <img src="https://github.com/AbuHurairaPhenologix/autosphere-sdv-platform/actions/workflows/ci.yml/badge.svg" alt="CI">
-  </a>
   <img src="https://img.shields.io/badge/.NET-Platform-512BD4?logo=dotnet&logoColor=white" alt=".NET">
   <img src="https://img.shields.io/badge/Angular-Frontend-DD0031?logo=angular&logoColor=white" alt="Angular">
   <img src="https://img.shields.io/badge/MQTT-Messaging-660066" alt="MQTT">
