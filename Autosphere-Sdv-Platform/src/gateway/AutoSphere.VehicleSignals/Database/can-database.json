@@ -1,0 +1,91 @@
+{
+  "name": "AutoSphere EV Prototype",
+  "version": "1.0.0",
+  "comment": "DBC-inspired CAN database. Intel = little-endian, Motorola = big-endian (DBC start-bit convention: MSB position). Bits 0-11 of every E2E-protected message are reserved for CRC-8 (byte 0) and the alive counter (byte 1, low nibble).",
+  "messages": [
+    {
+      "name": "VCU_Status",
+      "id": "0x100",
+      "length": 8,
+      "cycleTimeMs": 50,
+      "sender": "VehicleControlUnit",
+      "e2eDataId": "0x0100",
+      "signals": [
+        { "name": "GearPosition", "vssPath": "Vehicle.Powertrain.Transmission.SelectedGear", "startBit": 12, "length": 3, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 3,
+          "valueTable": { "0": "Park", "1": "Reverse", "2": "Neutral", "3": "Drive" } },
+        { "name": "BrakeStatus", "vssPath": "Vehicle.Chassis.Brake.IsPressed", "startBit": 15, "length": 1, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 1,
+          "valueTable": { "0": "Released", "1": "Pressed" } },
+        { "name": "VehicleSpeed", "vssPath": "Vehicle.Speed", "startBit": 16, "length": 16, "byteOrder": "Intel", "factor": 0.01, "unit": "km/h", "minimum": 0, "maximum": 250 },
+        { "name": "AcceleratorPedalPosition", "vssPath": "Vehicle.Chassis.Accelerator.PedalPosition", "startBit": 32, "length": 8, "byteOrder": "Intel", "factor": 0.4, "unit": "%", "minimum": 0, "maximum": 100 },
+        { "name": "IgnitionStatus", "vssPath": "Vehicle.LowVoltageSystemState", "startBit": 40, "length": 2, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 3,
+          "valueTable": { "0": "Off", "1": "Accessory", "2": "On", "3": "Start" } }
+      ]
+    },
+    {
+      "name": "VCU_Trip",
+      "id": "0x101",
+      "length": 8,
+      "cycleTimeMs": 500,
+      "sender": "VehicleControlUnit",
+      "e2eDataId": "0x0101",
+      "signals": [
+        { "name": "Odometer", "vssPath": "Vehicle.TraveledDistance", "startBit": 16, "length": 24, "byteOrder": "Intel", "factor": 0.1, "unit": "km", "minimum": 0, "maximum": 1000000 },
+        { "name": "VehicleRange", "vssPath": "Vehicle.Powertrain.Range", "startBit": 40, "length": 16, "byteOrder": "Intel", "factor": 0.1, "unit": "km", "minimum": 0, "maximum": 1000 }
+      ]
+    },
+    {
+      "name": "MCU_Status",
+      "id": "0x200",
+      "length": 8,
+      "cycleTimeMs": 20,
+      "sender": "MotorControlUnit",
+      "e2eDataId": "0x0200",
+      "signals": [
+        { "name": "MotorRPM", "vssPath": "Vehicle.Powertrain.ElectricMotor.Speed", "startBit": 16, "length": 16, "byteOrder": "Intel", "isSigned": true, "unit": "rpm", "minimum": -12000, "maximum": 16000 },
+        { "name": "MotorTorque", "vssPath": "Vehicle.Powertrain.ElectricMotor.Torque", "startBit": 32, "length": 16, "byteOrder": "Intel", "isSigned": true, "factor": 0.1, "unit": "Nm", "minimum": -400, "maximum": 400 },
+        { "name": "MotorTemperature", "vssPath": "Vehicle.Powertrain.ElectricMotor.Temperature", "startBit": 48, "length": 8, "byteOrder": "Intel", "offset": -40, "unit": "°C", "minimum": -40, "maximum": 180 }
+      ]
+    },
+    {
+      "name": "BMS_Status",
+      "id": "0x300",
+      "length": 8,
+      "cycleTimeMs": 100,
+      "sender": "BatteryManagementSystem",
+      "e2eDataId": "0x0300",
+      "signals": [
+        { "name": "ChargingStatus", "vssPath": "Vehicle.Powertrain.TractionBattery.Charging.Status", "startBit": 12, "length": 3, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 3,
+          "valueTable": { "0": "NotCharging", "1": "Charging", "2": "ChargeComplete", "3": "Fault" } },
+        { "name": "BatteryStateOfCharge", "vssPath": "Vehicle.Powertrain.TractionBattery.StateOfCharge.Current", "startBit": 16, "length": 10, "byteOrder": "Intel", "factor": 0.1, "unit": "%", "minimum": 0, "maximum": 100 },
+        { "name": "BatteryTemperature", "vssPath": "Vehicle.Powertrain.TractionBattery.Temperature.Average", "startBit": 32, "length": 16, "byteOrder": "Intel", "isSigned": true, "factor": 0.1, "unit": "°C", "minimum": -40, "maximum": 85 }
+      ]
+    },
+    {
+      "name": "BMS_Pack",
+      "id": "0x301",
+      "length": 8,
+      "cycleTimeMs": 100,
+      "sender": "BatteryManagementSystem",
+      "e2eDataId": "0x0301",
+      "signals": [
+        { "name": "BatteryVoltage", "vssPath": "Vehicle.Powertrain.TractionBattery.CurrentVoltage", "startBit": 23, "length": 16, "byteOrder": "Motorola", "factor": 0.1, "unit": "V", "minimum": 0, "maximum": 800 },
+        { "name": "BatteryCurrent", "vssPath": "Vehicle.Powertrain.TractionBattery.CurrentCurrent", "startBit": 39, "length": 16, "byteOrder": "Motorola", "isSigned": true, "factor": 0.1, "unit": "A", "minimum": -500, "maximum": 500 }
+      ]
+    },
+    {
+      "name": "BCM_Status",
+      "id": "0x400",
+      "length": 8,
+      "cycleTimeMs": 500,
+      "sender": "BodyControlModule",
+      "e2eDataId": "0x0400",
+      "signals": [
+        { "name": "DoorFrontLeft", "vssPath": "Vehicle.Cabin.Door.Row1.DriverSide.IsOpen", "startBit": 16, "length": 1, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 1, "valueTable": { "0": "Closed", "1": "Open" } },
+        { "name": "DoorFrontRight", "vssPath": "Vehicle.Cabin.Door.Row1.PassengerSide.IsOpen", "startBit": 17, "length": 1, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 1, "valueTable": { "0": "Closed", "1": "Open" } },
+        { "name": "DoorRearLeft", "vssPath": "Vehicle.Cabin.Door.Row2.DriverSide.IsOpen", "startBit": 18, "length": 1, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 1, "valueTable": { "0": "Closed", "1": "Open" } },
+        { "name": "DoorRearRight", "vssPath": "Vehicle.Cabin.Door.Row2.PassengerSide.IsOpen", "startBit": 19, "length": 1, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 1, "valueTable": { "0": "Closed", "1": "Open" } },
+        { "name": "TrunkStatus", "vssPath": "Vehicle.Body.Trunk.Rear.IsOpen", "startBit": 20, "length": 1, "byteOrder": "Intel", "unit": "", "minimum": 0, "maximum": 1, "valueTable": { "0": "Closed", "1": "Open" } }
+      ]
+    }
+  ]
+}

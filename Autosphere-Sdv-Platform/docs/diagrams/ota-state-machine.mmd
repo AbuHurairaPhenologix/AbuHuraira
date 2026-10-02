@@ -1,0 +1,24 @@
+stateDiagram-v2
+    [*] --> Created
+    Created --> Pending
+    Created --> Cancelled
+    Pending --> Downloading
+    Pending --> Cancelled
+    Downloading --> Verifying
+    Verifying --> Installing
+    Installing --> Restarting
+    Restarting --> HealthChecking
+    HealthChecking --> Succeeded
+    Pending --> Failed
+    Downloading --> Failed
+    Verifying --> Failed: checksum / signature / target / version
+    Installing --> Failed: ECU rejected image
+    Restarting --> RollingBack
+    HealthChecking --> RollingBack: health check failed
+    RollingBack --> RolledBack
+    RollingBack --> RollbackFailed
+    Succeeded --> [*]
+    Failed --> [*]
+    RolledBack --> [*]
+    RollbackFailed --> [*]
+    Cancelled --> [*]

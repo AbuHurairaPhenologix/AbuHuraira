@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AutoSphere.VehicleSignals</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AutoSphere.CanBus/AutoSphere.CanBus.csproj" />
+    <ProjectReference Include="../../shared/AutoSphere.SharedKernel/AutoSphere.SharedKernel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Database/can-database.json" LogicalName="AutoSphere.VehicleSignals.Database.can-database.json" />
+  </ItemGroup>
+
+</Project>

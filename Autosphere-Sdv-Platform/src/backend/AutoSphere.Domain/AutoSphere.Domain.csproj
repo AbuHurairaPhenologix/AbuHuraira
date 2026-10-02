@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AutoSphere.Domain</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../shared/AutoSphere.SharedKernel/AutoSphere.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>

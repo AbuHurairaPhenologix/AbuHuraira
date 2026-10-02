@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  dotnet:
+    name: .NET build & tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore AutoSphere.sln
+
+      - name: Build (warnings are errors)
+        run: dotnet build AutoSphere.sln --configuration Release --no-restore
+
+      - name: Unit tests
+        run: dotnet test --project tests/AutoSphere.UnitTests --configuration Release --no-build
+
+      - name: Architecture tests
+        run: dotnet test --project tests/AutoSphere.ArchitectureTests --configuration Release --no-build
+
+      # In-process platform: embedded MQTT broker, API on SQLite, gateway with simulated ECUs.
+      - name: Integration & end-to-end tests
+        run: dotnet test --project tests/AutoSphere.IntegrationTests --configuration Release --no-build
+
+  frontend:
+    name: Angular build & tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: src/frontend/autosphere-web
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: src/frontend/autosphere-web/package-lock.json
+
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npm test -- --watch=false
+
+  docker:
+    name: Docker images & compose validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    needs: [dotnet, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate docker-compose.yml
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+
+      - name: Build images (not pushed)
+        run: |
+          docker build -f docker/api.Dockerfile -t autosphere/api:ci .
+          docker build -f docker/gateway.Dockerfile -t autosphere/gateway:ci .
+          docker build -f docker/simulator.Dockerfile -t autosphere/simulator:ci .
+          docker build -f docker/web.Dockerfile -t autosphere/web:ci .
+
+  socketcan:
+    name: SocketCAN on vcan (best effort)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Hosted runner kernels do not always ship the vcan module; this job documents and exercises the
+    # Linux transport when possible without blocking the pipeline.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Create vcan0
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq "linux-modules-extra-$(uname -r)" can-utils || true
+          sudo ./scripts/setup-vcan.sh vcan0
+
+      - name: SocketCAN tests
+        env:
+          AUTOSPHERE_SOCKETCAN_INTERFACE: vcan0
+        run: dotnet test --project tests/AutoSphere.IntegrationTests --configuration Release -- --filter-class "AutoSphere.IntegrationTests.SocketCanTests"

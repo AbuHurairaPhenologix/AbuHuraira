@@ -1,0 +1,134 @@
+<div class="page">
+  <div class="page-header">
+    <div>
+      <h1>Diagnostics</h1>
+      <p>UDS-inspired remote diagnostics executed by the gateway over ISO-TP on the vehicle CAN bus.</p>
+    </div>
+    @if (auth.canOperate()) {
+      <div class="form-row">
+        <button class="primary" [disabled]="busy() !== null" (click)="scan()">{{ busy() === 'scan' ? 'Scanning…' : 'Run full diagnostic scan' }}</button>
+        <button [disabled]="busy() !== null || clearable() === 0" (click)="clear(null)">Clear eligible DTCs ({{ clearable() }})</button>
+      </div>
+    }
+  </div>
+
+  @if (message(); as m) { <div class="notice" [class.error]="m.error" role="status">{{ m.text }}</div> }
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Diagnostic trouble codes</h2>
+      <label class="check">
+        <input type="checkbox" [checked]="includeHistory()" (change)="toggleHistory($any($event.target).checked)" /> Include cleared history
+      </label>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Code</th><th>ECU</th><th>Description</th><th>Severity</th><th>Status</th><th>Detected</th><th>Resolved</th><th class="num">Occurrences</th>
+            @if (auth.canOperate()) { <th></th> }</tr>
+        </thead>
+        <tbody>
+          @for (dtc of dtcs(); track dtc.id) {
+            <tr>
+              <td><strong class="mono">{{ dtc.code }}</strong><div class="muted mono">0x{{ dtc.statusMask.toString(16).padStart(2, '0') }}</div></td>
+              <td class="nowrap">{{ dtc.ecuId }}</td>
+              <td>
+                <div>{{ dtc.description }}</div>
+                <div class="muted">{{ dtc.faultCategory }}</div>
+                @if (dtc.snapshot.length) { <div class="snapshot">Freeze frame: {{ snapshotText(dtc) }}</div> }
+              </td>
+              <td><app-status [value]="dtc.severity" /></td>
+              <td><app-status [value]="dtc.status" [label]="dtc.status + (dtc.confirmed ? '' : ' (pending)')" /></td>
+              <td class="nowrap">{{ dtc.detectedAt | date: 'medium' }}</td>
+              <td>{{ dtc.resolvedAt ? (dtc.resolvedAt | date: 'mediumTime') : '—' }}</td>
+              <td class="num">{{ dtc.occurrenceCount }}</td>
+              @if (auth.canOperate()) {
+                <td>
+                  @if (dtc.isClearable) {
+                    <button class="small" [disabled]="busy() !== null" (click)="clear(dtc)">Clear</button>
+                  } @else if (dtc.status === 'Active') {
+                    <span class="muted" title="Active DTCs can only be cleared after the fault condition is resolved">not clearable</span>
+                  }
+                </td>
+              }
+            </tr>
+          } @empty {
+            <tr><td colspan="9" class="empty">No diagnostic trouble codes stored.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-header">
+      <h2>Latest full scan</h2>
+      @if (latest(); as s) { <app-status [value]="s.status" /> }
+    </div>
+    @if (latest(); as s) {
+      <p class="diagnosis">{{ s.diagnosis ?? s.error ?? '—' }}</p>
+      <div class="meta">
+        <span>Correlation <code>{{ s.correlationId }}</code></span>
+        <span>By {{ s.requestedBy }} at {{ s.requestedAt | date: 'mediumTime' }}</span>
+        <span>Vehicle {{ s.vehicleDurationMs ?? 0 | number: '1.0-1' }} ms</span>
+        <span>Round trip {{ s.roundTripMs ?? 0 | number: '1.0-0' }} ms</span>
+      </div>
+      @for (r of s.results; track r.ecuId) {
+        <details>
+          <summary>
+            <strong>{{ r.ecuId }}</strong>
+            <app-status [value]="r.success ? 'Completed' : 'Failed'" [label]="r.success ? 'responded' : 'no response'" />
+            <span class="muted">{{ r.exchanges.length }} UDS exchanges · {{ r.durationMs | number: '1.0-1' }} ms</span>
+            @if (r.error) { <span class="nrc">{{ r.error }}</span> }
+          </summary>
+          @if (r.data?.length) {
+            <div class="data">
+              @for (d of r.data; track d.identifier) { <span><code>{{ d.identifier }}</code> {{ d.name }}: <strong>{{ d.value }}</strong> {{ d.unit ?? '' }}</span> }
+            </div>
+          }
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Service</th><th>Request</th><th>Response</th><th class="num">ms</th></tr></thead>
+              <tbody>
+                @for (x of r.exchanges; track $index) {
+                  <tr>
+                    <td>{{ x.service }}</td>
+                    <td class="hex">{{ x.requestHex }}</td>
+                    <td class="hex">{{ x.responseHex ?? '(no response)' }} @if (x.negativeResponse) { <span class="nrc">NRC {{ x.negativeResponse }}</span> }</td>
+                    <td class="num">{{ x.durationMs | number: '1.0-2' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </details>
+      }
+    } @else {
+      <p class="empty">No scan has been run yet.</p>
+    }
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><h2>Diagnostic history</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Time</th><th>Operation</th><th>ECU</th><th>Status</th><th>Requested by</th><th class="num">Round trip</th><th>Result</th></tr></thead>
+        <tbody>
+          @for (s of store.diagnostics(); track s.correlationId) {
+            <tr>
+              <td>{{ s.requestedAt | date: 'mediumTime' }}</td>
+              <td>{{ s.operation }}</td>
+              <td>{{ s.ecuId ?? 'all' }}</td>
+              <td><app-status [value]="s.status" /></td>
+              <td>{{ s.requestedBy }}</td>
+              <td class="num">{{ s.roundTripMs ?? 0 | number: '1.0-0' }} ms</td>
+              <td>{{ s.diagnosis ?? s.error ?? '' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7" class="empty">No diagnostic sessions yet.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>

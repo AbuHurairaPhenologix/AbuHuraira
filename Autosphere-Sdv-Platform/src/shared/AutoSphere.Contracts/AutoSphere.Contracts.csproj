@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AutoSphere.Contracts</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AutoSphere.SharedKernel/AutoSphere.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>

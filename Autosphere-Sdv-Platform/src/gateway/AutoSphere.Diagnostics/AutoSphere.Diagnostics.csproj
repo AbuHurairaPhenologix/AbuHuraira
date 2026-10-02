@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>AutoSphere.Diagnostics</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../AutoSphere.CanBus/AutoSphere.CanBus.csproj" />
+    <ProjectReference Include="../../shared/AutoSphere.SharedKernel/AutoSphere.SharedKernel.csproj" />
+  </ItemGroup>
+
+</Project>

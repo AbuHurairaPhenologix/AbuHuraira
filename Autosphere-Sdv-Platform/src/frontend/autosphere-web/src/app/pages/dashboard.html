@@ -1,0 +1,116 @@
+<div class="page">
+  @if (store.vehicle(); as vehicle) {
+    <div class="page-header">
+      <div>
+        <h1>{{ vehicle.vehicleId }} · {{ vehicle.model }}</h1>
+        <p>VIN <code>{{ vehicle.vin }}</code> · Gateway {{ vehicle.gatewayId ?? '—' }} {{ vehicle.gatewaySoftwareVersion ?? '' }}
+          · last seen {{ vehicle.lastSeenAt ? (vehicle.lastSeenAt | date: 'mediumTime') : 'never' }}</p>
+      </div>
+    </div>
+
+    <section class="hero grid">
+      <div class="panel gauge-panel">
+        <app-gauge [value]="snapshot()?.speedKmh ?? null" [max]="200" unit="km/h" label="Vehicle speed" />
+      </div>
+      <div class="panel gauge-panel">
+        <app-gauge [value]="snapshot()?.motorRpm ?? null" [max]="10000" unit="rpm" label="Motor speed" />
+      </div>
+      <div class="panel health" [class]="'panel health ' + vehicle.health.status.toLowerCase()">
+        <div class="panel-header">
+          <h2>Vehicle health</h2>
+          <app-status [value]="vehicle.health.status" />
+        </div>
+        <div class="score">
+          <span class="score-value">{{ vehicle.health.score }}</span><span class="muted">/ 100</span>
+        </div>
+        @if (reasons().length === 0) {
+          <p class="secondary">All monitored conditions nominal.</p>
+        } @else {
+          <ul class="reasons">
+            @for (reason of reasons(); track reason) { <li>{{ reason }}</li> }
+          </ul>
+        }
+        <a routerLink="/diagnostics" class="more">Open diagnostics →</a>
+      </div>
+    </section>
+
+    <section class="grid grid-kpi">
+      <app-kpi label="Battery state of charge" [value]="snapshot()?.batteryStateOfChargePercent ?? null" unit="%"
+               [level]="snapshot()?.batteryStateOfChargePercent ?? null" />
+      <app-kpi label="Battery temperature" [value]="snapshot()?.batteryTemperatureC ?? null" unit="°C"
+               [alarm]="(snapshot()?.batteryTemperatureC ?? 0) >= 60" hint="Warn 50 · critical 60 °C" />
+      <app-kpi label="Motor temperature" [value]="snapshot()?.motorTemperatureC ?? null" unit="°C"
+               [alarm]="(snapshot()?.motorTemperatureC ?? 0) >= 130" hint="Warn 110 · critical 130 °C" />
+      <app-kpi label="Estimated range" [value]="snapshot()?.rangeKm ?? null" unit="km" format="1.0-0" />
+      <app-kpi label="Charging" [text]="chargingLabel(snapshot()?.charging)" />
+      <app-kpi label="Gear · ignition" [text]="(snapshot()?.gear ?? '—') + ' · ' + (snapshot()?.ignition ?? '—')" />
+      <app-kpi label="Pack voltage" [value]="snapshot()?.batteryVoltageV ?? null" unit="V"
+               [hint]="'Current ' + ((snapshot()?.batteryCurrentA ?? 0) | number: '1.0-1') + ' A'" />
+      <app-kpi label="Odometer" [value]="snapshot()?.odometerKm ?? null" unit="km"
+               [hint]="snapshot()?.anyDoorOpen ? 'A door is open' : 'All doors closed'" />
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Electronic control units</h2>
+        <a routerLink="/ecus" class="more">Details →</a>
+      </div>
+      <div class="ecu-grid">
+        @for (ecu of ecus(); track ecu.ecuId) {
+          <div class="ecu">
+            <div class="ecu-top">
+              <strong>{{ ecu.ecuId }}</strong>
+              <app-status [value]="ecu.status" />
+            </div>
+            <span class="secondary">{{ typeLabel[ecu.type] }}</span>
+            <span class="mono">SW {{ ecu.softwareVersion }}</span>
+            <span class="muted small">
+              {{ ecu.activeDtcCount }} active DTC · heartbeat {{ ecu.lastHeartbeatAt ? (ecu.lastHeartbeatAt | date: 'mediumTime') : '—' }}
+            </span>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="grid grid-2">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Active alerts</h2>
+          <a routerLink="/alerts" class="more">All alerts →</a>
+        </div>
+        @for (alert of topAlerts(); track alert.id) {
+          <div class="alert-row">
+            <app-status [value]="alert.severity" />
+            <div>
+              <div>{{ alert.message }}</div>
+              <span class="muted small">{{ alert.source }} · {{ alert.raisedAt | date: 'mediumTime' }}</span>
+            </div>
+          </div>
+        } @empty {
+          <p class="empty">No active alerts.</p>
+        }
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Edge pipeline</h2>
+          <span class="muted small">CAN → gateway → MQTT → backend → this dashboard</span>
+        </div>
+        @if (store.telemetry(); as t) {
+          <dl class="stats">
+            <div><dt>CAN frames/s</dt><dd>{{ t.statistics?.framesPerSecond ?? 0 | number: '1.0-0' }}</dd></div>
+            <div><dt>Avg decode</dt><dd>{{ t.statistics?.averageDecodeMicroseconds ?? 0 | number: '1.0-1' }} µs</dd></div>
+            <div><dt>Rejected frames</dt><dd>{{ t.statistics?.framesRejected ?? 0 }}</dd></div>
+            <div><dt>CAN → gateway publish</dt><dd>{{ t.latency.canToGatewayPublishMs | number: '1.0-1' }} ms</dd></div>
+            <div><dt>Gateway → backend</dt><dd>{{ t.latency.gatewayToBackendMs | number: '1.0-1' }} ms</dd></div>
+            <div><dt>Backend → dashboard</dt><dd>{{ store.dashboardLatencyMs() ?? 0 | number: '1.0-0' }} ms</dd></div>
+          </dl>
+          <p class="muted small">Latencies assume synchronized clocks (single host); sequence #{{ t.sequence }}.</p>
+        } @else {
+          <p class="empty">Waiting for telemetry…</p>
+        }
+      </div>
+    </section>
+  } @else {
+    <p class="empty">Loading vehicle…</p>
+  }
+</div>

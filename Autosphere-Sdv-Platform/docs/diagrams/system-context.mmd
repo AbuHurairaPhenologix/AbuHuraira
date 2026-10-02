@@ -1,0 +1,12 @@
+flowchart LR
+    subgraph Vehicle["Vehicle (simulated)"]
+        plant["Plant model"] --> ecus["VCU · MCU · BMS · BCM<br/>ECU simulators"]
+        ecus <--> can[["CAN bus<br/>InMemory | UDP | SocketCAN"]]
+        can <--> gw["Vehicle Edge Gateway<br/>.NET Worker"]
+    end
+    gw <-- "MQTT 5" --> mqtt[("Mosquitto")]
+    mqtt <--> api["ASP.NET Core API<br/>+ SignalR"]
+    api --> pg[("PostgreSQL")]
+    api --> redis[("Redis")]
+    web["Angular dashboard"] -- "REST" --> api
+    api -- "SignalR push" --> web

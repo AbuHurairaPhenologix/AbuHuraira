@@ -1,0 +1,79 @@
+<div class="page">
+  <div class="banner" role="note">
+    <span aria-hidden="true" style="font-size: 22px">⚠</span>
+    <div>
+      <strong>Simulation / Development Mode</strong>
+      <div class="secondary">Fault injection is a test-harness feature for the simulated vehicle. It is disabled in production configurations.</div>
+    </div>
+  </div>
+
+  <div class="page-header">
+    <div>
+      <h1>Fault injection</h1>
+      <p>Inject faults into the simulated ECUs, the plant model, the gateway or the OTA transport and observe the reaction across the platform.</p>
+    </div>
+  </div>
+
+  @if (message(); as m) { <div class="notice" [class.error]="m.error" role="status">{{ m.text }}</div> }
+
+  <section class="grid grid-3">
+    @for (card of cards; track card.fault) {
+      <div class="panel card">
+        <h2>{{ card.title }}</h2>
+        <p>{{ card.description }}</p>
+        <div class="controls">
+          @if (card.needsEcu) {
+            <label>ECU
+              <select [(ngModel)]="targets[card.fault]" [name]="'ecu-' + card.fault">
+                @for (ecu of ecus(); track ecu.ecuId) { <option [value]="ecu.ecuId">{{ ecu.ecuId }}</option> }
+              </select>
+            </label>
+          }
+          @if (card.needsPackage) {
+            <label>Package
+              <select [(ngModel)]="selectedPackage" name="package">
+                @for (p of packages(); track p.id) { <option [value]="p.id">{{ p.name }}</option> }
+              </select>
+            </label>
+          }
+          @if (!card.needsPackage) {
+            <label>Auto-clear after (s)
+              <input type="number" min="1" max="3600" size="5" [(ngModel)]="durations[card.fault]" [name]="'d-' + card.fault" placeholder="manual" />
+            </label>
+          }
+          <button class="danger" [disabled]="busy() !== null || store.vehicle()?.connectivity !== 'Online'" (click)="send(card, 'Inject')">Inject</button>
+          @if (card.clearable) {
+            <button [disabled]="busy() !== null" (click)="send(card, 'Clear')">Clear</button>
+          }
+        </div>
+      </div>
+    }
+  </section>
+
+  <section class="panel">
+    <div class="panel-header"><h2>Injection history</h2></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Time</th><th>Fault</th><th>Action</th><th>Target</th><th>By</th><th>Acknowledged by</th><th>Result</th></tr></thead>
+        <tbody>
+          @for (f of store.faults(); track f.correlationId) {
+            <tr>
+              <td>{{ f.requestedAt | date: 'mediumTime' }}</td>
+              <td>{{ f.fault }}</td>
+              <td>{{ f.action }}</td>
+              <td>{{ f.targetEcuId ?? 'vehicle' }}</td>
+              <td>{{ f.requestedBy }}</td>
+              <td>
+                @if (f.accepted === null) { <app-status value="Pending" label="awaiting ack" /> }
+                @else { <app-status [value]="f.accepted ? 'Completed' : 'Failed'" [label]="f.handledBy ?? ''" /> }
+              </td>
+              <td>{{ f.result ?? '' }}</td>
+            </tr>
+          } @empty {
+            <tr><td colspan="7" class="empty">No faults injected yet.</td></tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
