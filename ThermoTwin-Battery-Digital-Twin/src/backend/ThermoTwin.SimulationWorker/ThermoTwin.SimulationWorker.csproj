@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>ThermoTwin.SimulationWorker</RootNamespace>
+    <Description>Hosted background services: live digital-twin loop, experiment queue and demo bootstrapper.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ThermoTwin.Application\ThermoTwin.Application.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.12" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.12" />
+  </ItemGroup>
+</Project>

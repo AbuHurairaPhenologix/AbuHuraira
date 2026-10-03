@@ -1,0 +1,97 @@
+{
+  "parameter": "Sensor count",
+  "unit": "sensors",
+  "rows": [
+    {
+      "parameter": 4,
+      "relativeLambda": 2.617440908313824E-05,
+      "metrics": {
+        "temperatureRmse": 0.23455,
+        "temperatureMaxError": 0.59406,
+        "sourceRelativeError": 0.51934,
+        "hotspotErrorMm": 14,
+        "estimatedHotspotX": 0.1380697628251359,
+        "estimatedHotspotY": 0.04999999999561321,
+        "peakSourceKw": 226.68
+      }
+    },
+    {
+      "parameter": 6,
+      "relativeLambda": 0.00023950414062155165,
+      "metrics": {
+        "temperatureRmse": 0.06127,
+        "temperatureMaxError": 0.31183,
+        "sourceRelativeError": 0.4459,
+        "hotspotErrorMm": 6.545,
+        "estimatedHotspotX": 0.13901525712855908,
+        "estimatedHotspotY": 0.07046528424402035,
+        "peakSourceKw": 201.54
+      }
+    },
+    {
+      "parameter": 8,
+      "relativeLambda": 0.00020016355851152457,
+      "metrics": {
+        "temperatureRmse": 0.08316,
+        "temperatureMaxError": 0.38943,
+        "sourceRelativeError": 0.48473,
+        "hotspotErrorMm": 5.436,
+        "estimatedHotspotX": 0.1374966881955932,
+        "estimatedHotspotY": 0.06941248542756974,
+        "peakSourceKw": 177.07
+      }
+    },
+    {
+      "parameter": 12,
+      "relativeLambda": 2.9807206716174537E-05,
+      "metrics": {
+        "temperatureRmse": 0.05275,
+        "temperatureMaxError": 0.24609,
+        "sourceRelativeError": 0.4251,
+        "hotspotErrorMm": 2.302,
+        "estimatedHotspotX": 0.13691880869480233,
+        "estimatedHotspotY": 0.06603240346837036,
+        "peakSourceKw": 250.72
+      }
+    },
+    {
+      "parameter": 16,
+      "relativeLambda": 6.84434760996153E-05,
+      "metrics": {
+        "temperatureRmse": 0.04042,
+        "temperatureMaxError": 0.17059,
+        "sourceRelativeError": 0.36289,
+        "hotspotErrorMm": 5.929,
+        "estimatedHotspotX": 0.13758796301177,
+        "estimatedHotspotY": 0.05808548969169037,
+        "peakSourceKw": 306.72
+      }
+    },
+    {
+      "parameter": 24,
+      "relativeLambda": 1.9403498452105112E-05,
+      "metrics": {
+        "temperatureRmse": 0.03878,
+        "temperatureMaxError": 0.14689,
+        "sourceRelativeError": 0.3455,
+        "hotspotErrorMm": 3.895,
+        "estimatedHotspotX": 0.1361039849294538,
+        "estimatedHotspotY": 0.06059747513233547,
+        "peakSourceKw": 335.7
+      }
+    },
+    {
+      "parameter": 32,
+      "relativeLambda": 5.991803710645662E-05,
+      "metrics": {
+        "temperatureRmse": 0.01081,
+        "temperatureMaxError": 0.03662,
+        "sourceRelativeError": 0.14366,
+        "hotspotErrorMm": 2.251,
+        "estimatedHotspotX": 0.13576961831619275,
+        "estimatedHotspotY": 0.06369592129509882,
+        "peakSourceKw": 497.2
+      }
+    }
+  ]
+}

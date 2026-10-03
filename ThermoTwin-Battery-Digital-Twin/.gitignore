@@ -1,0 +1,26 @@
+# ---- .NET ----
+[Bb]in/
+[Oo]bj/
+TestResults/
+*.user
+*.suo
+.vs/
+.idea/
+
+# ---- Runtime data ----
+**/App_Data/
+*.db
+*.db-shm
+*.db-wal
+logs/
+
+# ---- Angular / Node ----
+node_modules/
+dist/
+.angular/
+out-tsc/
+coverage/
+
+# ---- Python ----
+__pycache__/
+.venv/

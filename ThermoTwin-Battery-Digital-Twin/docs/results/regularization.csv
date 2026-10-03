@@ -1,0 +1,13 @@
+regularization,rule,relative_lambda,residual_K,temperature_rmse_K,source_relative_error,hotspot_error_mm
+Identity,L-curve corner,1.0000E-003,6.6553,0.06618,0.44848,9.485
+Identity,GCV,2.1957E-005,6.6237,0.05096,0.40837,3.438
+Identity,Discrepancy principle,1.0000E-010,6.5979,4.48231,50.43952,127.096
+Identity,Oracle (min. source error),3.1623E-005,6.6252,0.05084,0.40442,3.180
+Gradient,L-curve corner,1.0000E-002,6.7037,0.07043,0.45422,9.028
+Gradient,GCV,2.9807E-005,6.6243,0.05275,0.42510,2.302
+Gradient,Discrepancy principle,1.0000E-010,6.5978,5.63793,56.93804,126.940
+Gradient,Oracle (min. source error),5.6234E-005,6.6270,0.05224,0.41908,2.074
+Laplacian,L-curve corner,5.6234E-002,6.7258,0.07191,0.46820,8.558
+Laplacian,GCV,4.1015E-005,6.6243,0.05713,0.45635,1.840
+Laplacian,Discrepancy principle,1.0000E-010,6.5972,7.93382,75.33530,127.414
+Laplacian,Oracle (min. source error),1.7783E-004,6.6305,0.05576,0.43993,2.327

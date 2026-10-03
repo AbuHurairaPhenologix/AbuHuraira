@@ -1,0 +1,254 @@
+.shell {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  min-height: 100vh;
+  background: linear-gradient(to right, #111110 232px, transparent 232px);
+}
+
+.side {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  background: #111110;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+  gap: 14px;
+  overflow-y: auto;
+}
+
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-decoration: none;
+  padding: 2px 6px 10px;
+  border-bottom: 1px solid var(--line);
+
+  svg {
+    width: 34px;
+    height: 34px;
+    flex: none;
+  }
+
+  strong {
+    display: block;
+    color: var(--ink-1);
+    font-size: 15px;
+    letter-spacing: -0.01em;
+
+    span {
+      color: var(--blue);
+    }
+  }
+
+  small {
+    color: var(--ink-3);
+    font-size: 11px;
+  }
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .sec {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    padding: 4px 8px;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: var(--ink-2);
+    text-decoration: none;
+    font-size: 13px;
+
+    i {
+      font-style: normal;
+      width: 16px;
+      text-align: center;
+      color: var(--ink-3);
+    }
+
+    &:hover {
+      background: var(--surface-2);
+      color: var(--ink-1);
+    }
+
+    &.active {
+      background: rgba(57, 135, 229, 0.14);
+      color: var(--ink-1);
+
+      i {
+        color: var(--blue);
+      }
+    }
+  }
+}
+
+.side-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .eq {
+    font-family: 'Cambria Math', 'STIX Two Math', 'Times New Roman', serif;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px;
+    line-height: 1.5;
+  }
+
+  .conn {
+    font-size: 11px;
+    color: var(--ink-3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+
+    span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--ink-3);
+    }
+
+    &[data-state='live'] span {
+      background: var(--good);
+      box-shadow: 0 0 0 3px rgba(12, 163, 12, 0.2);
+    }
+
+    &[data-state='reconnecting'] span {
+      background: var(--warning);
+    }
+
+    &[data-state='offline'] span {
+      background: var(--critical);
+    }
+  }
+}
+
+main {
+  min-width: 0;
+}
+
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 20px;
+  background: rgba(13, 13, 13, 0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.scenario {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+  flex: 1;
+
+  .name {
+    color: var(--ink-1);
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .meta {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--ink-3);
+    flex-wrap: wrap;
+
+    b {
+      color: var(--ink-1);
+      font-weight: 600;
+    }
+  }
+
+  .bar {
+    height: 3px;
+    background: var(--surface-3);
+    border-radius: 2px;
+    max-width: 520px;
+
+    div {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 2px;
+      transition: width 0.2s linear;
+    }
+  }
+}
+
+.controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+
+  .mode {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+
+  select {
+    font: inherit;
+    font-size: 12px;
+    background: var(--surface-2);
+    color: var(--ink-1);
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 6px 8px;
+  }
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .shell {
+    background: none;
+  }
+
+  .side {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .side-foot {
+    display: none;
+  }
+
+  .top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

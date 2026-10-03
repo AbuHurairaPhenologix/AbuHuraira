@@ -1,0 +1,72 @@
+<div class="shell">
+  <aside class="side">
+    <a class="brand" routerLink="/overview">
+      <svg viewBox="0 0 32 32" aria-hidden="true">
+        <rect x="3" y="7" width="23" height="18" rx="3" fill="none" stroke="#3987e5" stroke-width="2" />
+        <rect x="26" y="12" width="3" height="8" rx="1" fill="#3987e5" />
+        <circle cx="17" cy="15" r="5" fill="url(#hs)" />
+        <defs>
+          <radialGradient id="hs">
+            <stop offset="0" stop-color="#fcffa4" />
+            <stop offset=".45" stop-color="#e35933" />
+            <stop offset="1" stop-color="#1f0c48" stop-opacity="0" />
+          </radialGradient>
+        </defs>
+      </svg>
+      <div>
+        <strong>ThermoTwin<span>.NET</span></strong>
+        <small>Battery thermal digital twin</small>
+      </div>
+    </a>
+
+    @for (section of sections; track section.title) {
+      <nav>
+        <div class="sec">{{ section.title }}</div>
+        @for (item of section.items; track item.path) {
+          <a [routerLink]="item.path" routerLinkActive="active">
+            <i>{{ item.icon }}</i>{{ item.label }}
+          </a>
+        }
+      </nav>
+    }
+
+    <div class="side-foot">
+      <div class="eq">ρc<sub>p</sub> ∂T/∂t = k∇²T + q − H(u)(T − T<sub>c</sub>)</div>
+      <div class="conn" [attr.data-state]="connection()"><span></span>SignalR {{ connection() }}</div>
+    </div>
+  </aside>
+
+  <main>
+    <header class="top">
+      @if (frame(); as f) {
+        <div class="scenario">
+          <div class="name">{{ f.scenarioName }}</div>
+          <div class="meta">
+            <span class="pill" [class.ok]="f.status === 'Running'" [class.info]="f.status === 'Completed'">{{ f.status }}</span>
+            <span>t = <b class="num">{{ f.time.toFixed(0) }}</b> s / {{ f.duration }} s</span>
+            <span class="num">{{ clock(f.time) }}</span>
+            <span>load factor <b class="num">{{ (f.loadFactor * 100).toFixed(0) }} %</b></span>
+          </div>
+          <div class="bar"><div [style.width.%]="progress() * 100"></div></div>
+        </div>
+        <div class="controls">
+          <tt-risk [level]="f.risk" />
+          <label class="mode">
+            Cooling
+            <select [value]="f.mode" (change)="setMode($any($event.target).value)">
+              <option value="Autonomous">Autonomous (MPC)</option>
+              <option value="Advisory">Advisory</option>
+              <option value="Fixed">Fixed baseline</option>
+            </select>
+          </label>
+          @if (f.status === 'Running' || f.status === 'Paused') {
+            <button class="btn" (click)="togglePause()">{{ running() ? '❚❚ Pause' : '▶ Resume' }}</button>
+          }
+        </div>
+      } @else {
+        <div class="scenario"><div class="name">Connecting to ThermoTwin API…</div></div>
+      }
+    </header>
+    <router-outlet />
+  </main>
+</div>

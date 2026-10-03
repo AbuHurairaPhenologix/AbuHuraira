@@ -1,0 +1,7 @@
+strategy,peak_C,energy_J,max_violation_K,time_above_s,objective,feasible
+"No cooling",61.964,0.0,16.964,1235,1.172305E+006,False
+"Constant baseline (15 %)",49.290,911.2,4.290,880,4.000697E+004,False
+"Constant full cooling",31.758,270000.0,0.000,0,1.000000E+000,True
+"Constant minimal-feasible (23.9 %)",44.926,3679.4,0.000,0,1.363000E-002,True
+"Optimised schedule (open loop)",44.917,2369.0,0.000,0,8.930000E-003,True
+"Closed-loop MPC (live twin)",44.902,2109.1,0.000,0,8.290000E-003,True
