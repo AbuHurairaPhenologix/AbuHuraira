@@ -27,7 +27,66 @@
 **Detect abnormal operational behavior in distributed applications using structured telemetry,  
 window-based feature engineering, unsupervised machine learning, and engineering review.**
 
+<br/>
+
+<a href="#-application-screenshots"><b>Screenshots</b></a> ·
+<a href="#-benchmark-results"><b>Benchmark Results</b></a> ·
+<a href="#-running-the-project"><b>Run It</b></a> ·
+<a href="project_Report/Abu_Huraira_Project_Report.pdf"><b>Project Report (PDF)</b></a>
+
 </div>
+
+<br/>
+
+<p align="center">
+  <img src="docs/images/overview.png" width="100%" alt="Anomaly Review dashboard — overview of processed windows, anomaly trend, component health and latest anomalies" />
+</p>
+
+<p align="center"><sub><i>Live dashboard running on the full Docker stack — 6 hours of backfilled telemetry for two services, with five injected incidents all flagged by the active One-Class SVM model.</i></sub></p>
+
+---
+
+# 🏆 Results at a Glance
+
+<table>
+<tr>
+<td align="center" width="25%">
+
+### 0.678
+**F1-score**<br/>
+<sub>One-Class SVM, untouched test set</sub>
+
+</td>
+<td align="center" width="25%">
+
+### 0.66%
+**False-positive rate**<br/>
+<sub>53 false alerts in 8,000 normal windows</sub>
+
+</td>
+<td align="center" width="25%">
+
+### 5 / 5
+**Injected incidents flagged**<br/>
+<sub>live demo, 144 windows, zero false alerts</sub>
+
+</td>
+<td align="center" width="25%">
+
+### 4
+**Models compared**<br/>
+<sub>IF · LOF · OCSVM · RF reference</sub>
+
+</td>
+</tr>
+</table>
+
+<p align="center">
+<img src="https://img.shields.io/badge/Telemetry_Events_Processed-60%2C000%2B-0A66C2?style=flat-square" />
+<img src="https://img.shields.io/badge/Benchmark_Windows-~34%2C000-0A66C2?style=flat-square" />
+<img src="https://img.shields.io/badge/Features_per_Window-8-0A66C2?style=flat-square" />
+<img src="https://img.shields.io/badge/Tests-.NET_·_Pytest_·_E2E-2EA44F?style=flat-square" />
+</p>
 
 ---
 
@@ -467,19 +526,71 @@ The evaluation framework measures:
 <img src="https://img.shields.io/badge/PR_AUC-Metric-yellow?style=for-the-badge" />
 </p>
 
-Generated evaluation artifacts can include:
+Every evaluation run writes a self-contained, versioned folder under `artifacts/evaluations/`:
 
 ```text
-metrics.json
-metrics.csv
-
-confusion-matrix.png
-score-distribution.png
-threshold-sensitivity.png
-model-comparison.png
-
-run-config.json
+eval-<training-run>-<timestamp>/
+├── benchmark.yaml            # exact config used
+├── environment.json          # library versions, seed, config hash
+├── metrics.json / .csv       # test-set metrics per model
+├── per_type_recall.csv       # recall per anomaly scenario
+├── threshold_sensitivity_*.csv
+├── report.md                 # human-readable summary
+└── plots/                    # comparison, confusion, distributions, sensitivity
 ```
+
+---
+
+# 📈 Benchmark Results
+
+Results below come from the committed run
+[`eval-20261001t124738z-20261001t124752z`](artifacts/evaluations/eval-20261001t124738z-20261001t124752z/report.md):
+**8,000 normal + 450 anomaly test windows**, seed `20220215`, thresholds selected on the validation split and applied once to the untouched test set.
+
+| Model | Precision | Recall | F1 | FPR | ROC-AUC | PR-AUC |
+|---|---:|---:|---:|---:|---:|---:|
+| Isolation Forest | 0.318 | 0.411 | 0.359 | 4.95% | 0.825 | 0.312 |
+| Local Outlier Factor | **0.859** | 0.529 | 0.655 | **0.49%** | 0.827 | 0.642 |
+| **One-Class SVM** ⭐ | 0.830 | **0.573** | **0.678** | 0.66% | **0.830** | **0.662** |
+| Random Forest *(supervised reference)* | 0.854 | 0.584 | 0.694 | 0.56% | 0.858 | 0.680 |
+
+⭐ **One-Class SVM** is the recommended production model (best validation F1 among unsupervised models) and is activated automatically on first start. It gets within **0.016 F1** of the supervised Random Forest — **without using a single anomaly label during training**.
+
+<p align="center">
+  <img src="artifacts/evaluations/eval-20261001t124738z-20261001t124752z/plots/model_comparison.png" width="80%" alt="Model comparison: precision, recall and F1 per model" />
+</p>
+
+<table>
+<tr>
+<td width="50%">
+<img src="artifacts/evaluations/eval-20261001t124738z-20261001t124752z/plots/score_distribution_ocsvm.png" alt="One-Class SVM score distribution with selected threshold" />
+<p align="center"><sub><b>Score separation</b> — normal windows (blue) sit well below the validation-selected threshold; anomalies (orange) pile up at the top of the scale.</sub></p>
+</td>
+<td width="50%">
+<img src="artifacts/evaluations/eval-20261001t124738z-20261001t124752z/plots/threshold_sensitivity_ocsvm.png" alt="One-Class SVM threshold sensitivity" />
+<p align="center"><sub><b>Threshold sensitivity</b> — the precision / recall / FPR trade-off that drives threshold selection.</sub></p>
+</td>
+</tr>
+</table>
+
+<p align="center">
+  <img src="artifacts/evaluations/eval-20261001t124738z-20261001t124752z/plots/confusion_matrices.png" width="100%" alt="Confusion matrices for all four models" />
+</p>
+
+### Recall by Anomaly Scenario
+
+| Model | Latency spike | Traffic surge | Error burst | Auth-failure burst | Dependency instability | Retry burst |
+|---|---:|---:|---:|---:|---:|---:|
+| Isolation Forest | 0.95 | 0.36 | 0.41 | 0.37 | 0.20 | 0.17 |
+| Local Outlier Factor | 0.85 | 1.00 | 0.68 | 0.55 | 0.04 | 0.05 |
+| **One-Class SVM** | 0.87 | 1.00 | 0.77 | 0.57 | 0.12 | 0.11 |
+| Random Forest *(ref.)* | 0.92 | 1.00 | 0.95 | 0.61 | 0.01 | 0.01 |
+
+<p align="center">
+  <img src="artifacts/evaluations/eval-20261001t124738z-20261001t124752z/plots/per_type_recall.png" width="80%" alt="Recall per anomaly scenario" />
+</p>
+
+> **Honest reading of the numbers:** latency, traffic and error anomalies are caught reliably, while low-intensity dependency and retry anomalies are deliberately generated to overlap with normal behaviour and remain hard for every model — including the supervised one. That is exactly the trade-off the threshold-selection and human-review workflow exist to manage.
 
 ---
 
@@ -869,35 +980,54 @@ Python ML Service
 
 # 📸 Application Screenshots
 
-> Add your actual project screenshots inside:
->
-> `docs/images/`
+All screenshots were captured from the running Docker Compose stack (Angular → ASP.NET Core → PostgreSQL / OpenSearch / Python ML service) after replaying 6 hours of telemetry with `scripts/seed/backfill_events.py`.
 
-Then these images will automatically appear in GitHub README.
+## 🔍 Anomaly Investigation
 
-## Dashboard
+A flagged `checkout-api` latency-spike window. The page shows **why** it was flagged (non-causal reason summary), the **score vs. the exact threshold used**, the model version that produced it, all eight `ops-v1` features with **z-scores against the training baseline** (average and p95 latency light up at 7.46σ and 7.07σ), the raw related events pulled from OpenSearch, correlation IDs, and the review form.
 
 <p align="center">
-  <img src="docs/images/dashboard.png" width="95%" alt="Anomaly Detection Dashboard" />
+  <img src="docs/images/anomaly-details.png" width="100%" alt="Anomaly investigation: reason summary, score vs threshold, feature z-scores, related OpenSearch events and review form" />
 </p>
 
-## Anomaly Investigation
+## 🚨 Anomaly Queue
+
+Ranked windows whose score met the model's validated threshold, with a score-vs-threshold bar, model version and review state. Filterable by service, environment, review state and time range.
 
 <p align="center">
-  <img src="docs/images/anomaly-details.png" width="95%" alt="Anomaly Investigation" />
+  <img src="docs/images/anomalies.png" width="100%" alt="Anomaly queue with score vs threshold bars and review states" />
 </p>
 
-## Model Management
+## 🤖 Model Governance
+
+Four registered model versions with seed, training period, validated threshold and validation P / R / F1 / FPR. The supervised Random Forest is marked **reference only** and cannot be activated. Activation is admin-only and audited; retraining is an explicit action and always registers new versions as *inactive*.
 
 <p align="center">
-  <img src="docs/images/models.png" width="95%" alt="ML Model Management" />
+  <img src="docs/images/models.png" width="100%" alt="Model registry with validation metrics, activation state and retraining" />
 </p>
 
-## System Health
+<table>
+<tr>
+<td width="50%">
 
-<p align="center">
-  <img src="docs/images/system-health.png" width="95%" alt="System Health" />
-</p>
+### 🔎 Event Investigation
+
+Backend-constrained OpenSearch search across ~60,000 normalized events by service, environment, time range, correlation ID and event type.
+
+<img src="docs/images/events.png" alt="Event investigation backed by OpenSearch" />
+
+</td>
+<td width="50%">
+
+### ❤️ System Health
+
+Live health of the API, PostgreSQL, OpenSearch and the ML service, plus pipeline counters and background-worker run / failure history.
+
+<img src="docs/images/health.png" alt="System health: components, pipeline and background workers" />
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -974,6 +1104,9 @@ Then these images will automatically appear in GitHub README.
 ├── config/
 ├── data/
 ├── docs/
+│   └── images/             # dashboard screenshots
+├── project_Report/
+│   └── Abu_Huraira_Project_Report.pdf
 ├── scripts/
 │
 ├── docker-compose.yml
@@ -988,8 +1121,8 @@ Then these images will automatically appear in GitHub README.
 ## 1. Clone
 
 ```bash
-git clone <repository-url>
-cd <repository-name>
+git clone https://github.com/AbuHurairaPhenologix/AbuHuraira.git
+cd AbuHuraira/Ml-Log-Anomaly-Detection
 ```
 
 ---
@@ -1335,8 +1468,14 @@ Observability
 
 The detailed academic report covering the project's motivation, architecture, methodology, feature engineering, machine-learning models, benchmark evaluation and conclusions is included with this repository.
 
+<p align="center">
+  <a href="project_Report/Abu_Huraira_Project_Report.pdf">
+    <img src="https://img.shields.io/badge/📄_Read_the_Full_Project_Report-PDF-B31B1B?style=for-the-badge" alt="Read the full project report (PDF)" />
+  </a>
+</p>
+
 ```text
-Abu_Huraira_Senior_Design_Project_Report.pdf
+project_Report/Abu_Huraira_Project_Report.pdf
 ```
 
 ---

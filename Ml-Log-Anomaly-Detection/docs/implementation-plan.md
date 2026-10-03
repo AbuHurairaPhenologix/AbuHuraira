@@ -1,7 +1,7 @@
 # Implementation Plan
 
 **Project:** Machine Learning-Based Anomaly Detection for Distributed Web Application Logs
-**Primary specification:** [`../Abu_Huraira_Senior_Design_Project_Report.pdf`](../Abu_Huraira_Senior_Design_Project_Report.pdf) (32 pages, read in full, including all 12 figures and all tables)
+**Primary specification:** [`../project_Report/Abu_Huraira_Project_Report.pdf`](../project_Report/Abu_Huraira_Project_Report.pdf) (32 pages, read in full, including all 12 figures and all tables)
 **Plan written:** before any application source code was created. The workspace (`H:\ML`) contained only the report PDF — this is a greenfield implementation.
 
 ---
@@ -129,7 +129,7 @@ ML never runs inside an end-user request: demo endpoints only enqueue an event i
 
 ```
 H:\ML
-├── Abu_Huraira_Senior_Design_Project_Report.pdf   (untouched specification)
+├── project_Report/Abu_Huraira_Project_Report.pdf   (untouched specification)
 ├── README.md, docker-compose.yml, .env.example, .gitignore
 ├── config/                 benchmark.yaml (single reproducibility manifest), feature-schema ops-v1.json
 ├── docs/                   plan, traceability, architecture, api, database, ml-pipeline, testing, demo-guide, final-verification
