@@ -27,7 +27,12 @@ public sealed class ThermoTwinApiFactory : WebApplicationFactory<Program>
     }
 }
 
-public sealed class ApiIntegrationTests : IClassFixture<ThermoTwinApiFactory>
+/// <summary>All API tests share one host: Serilog's static bootstrap logger cannot be frozen by two hosts at once.</summary>
+[CollectionDefinition("Api")]
+public sealed class ApiCollection : ICollectionFixture<ThermoTwinApiFactory>;
+
+[Collection("Api")]
+public sealed class ApiIntegrationTests
 {
     private readonly ThermoTwinApiFactory _factory;
 

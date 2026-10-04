@@ -1,5 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { ExperimentStore } from '../core/experiment-store.service';
 import { clock, energy, fmt, mm, pct } from '../core/format';
+import { pow10 } from '../core/math-format';
+import { AdjointCheckResult, FemVerificationResult, ReducedOrderResult } from '../core/math-models';
 import { TwinStore } from '../core/twin-store.service';
 import { ChartComponent } from '../shared/chart.component';
 import { INK, SERIES, axis, barChart, limit, line, lineChart } from '../shared/chart-theme';
@@ -8,17 +12,17 @@ import { CardComponent, StatComponent } from '../shared/ui';
 
 @Component({
   selector: 'tt-overview',
-  imports: [StatComponent, CardComponent, HeatmapComponent, ChartComponent],
+  imports: [StatComponent, CardComponent, HeatmapComponent, ChartComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page">
       <div class="page-head">
         <div>
-          <h1>Battery Thermal Digital Twin</h1>
+          <h1>PDE-Constrained Battery Thermal Digital Twin</h1>
           <p>
-            Twelve noisy thermistors observe a 200 × 100 mm Li-ion cell during a fast charge. The twin solves an inverse heat-conduction
-            problem to reconstruct the hidden heat source, estimates the full temperature field, forecasts the peak and optimises cold-plate
-            cooling under the constraint T<sub>max</sub> ≤ T<sub>safe</sub>.
+            Twelve noisy thermistors observe a 200 × 100 mm Li-ion cell during a fast charge. The twin couples a parabolic heat PDE (solved by finite
+            volumes and verified against finite elements), a regularised inverse problem for the hidden heat source, a POD reduced-order model and an
+            adjoint-based PDE-constrained optimiser that keeps T(x, t) ≤ T<sub>safe</sub> with the least pump energy.
           </p>
         </div>
       </div>
@@ -40,12 +44,12 @@ import { CardComponent, StatComponent } from '../shared/ui';
         </div>
 
         <div class="pipeline">
-          @for (s of pipeline(); track s.title; let last = $last) {
-            <div class="stage">
-              <div class="k">{{ s.title }}</div>
+          @for (s of pipeline(); track s.title; let last = $last; let i = $index) {
+            <a class="stage" [routerLink]="s.route">
+              <div class="k"><span class="no">{{ i + 1 }}</span>{{ s.title }}</div>
               <div class="v">{{ s.value }}</div>
               <div class="d">{{ s.detail }}</div>
-            </div>
+            </a>
             @if (!last) {
               <div class="arrow">→</div>
             }
@@ -86,7 +90,9 @@ import { CardComponent, StatComponent } from '../shared/ui';
       display: flex; align-items: stretch; gap: 6px; padding: 10px; border-radius: 12px;
       background: var(--surface-1); border: 1px solid var(--line); overflow-x: auto;
     }
-    .stage { flex: 1 1 0; min-width: 112px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); }
+    .stage { flex: 1 1 0; min-width: 118px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--line); text-decoration: none; }
+    .stage:hover { border-color: rgba(57, 135, 229, 0.6); }
+    .no { display: inline-grid; place-items: center; width: 15px; height: 15px; border-radius: 50%; background: rgba(57,135,229,.18); color: var(--blue); font-size: 9.5px; font-weight: 700; margin-right: 5px; }
     .k { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); white-space: nowrap; }
     .v { color: var(--ink-1); font-weight: 600; font-size: 14px; margin-top: 3px; white-space: nowrap; font-variant-numeric: tabular-nums; }
     .d { font-size: 10.5px; color: var(--ink-3); margin-top: 2px; white-space: nowrap; }
@@ -95,6 +101,10 @@ import { CardComponent, StatComponent } from '../shared/ui';
 })
 export class OverviewPage {
   private readonly store = inject(TwinStore);
+  private readonly experiments = inject(ExperimentStore);
+  private readonly fem = this.experiments.latest<FemVerificationResult>('FemVerification');
+  private readonly rom = this.experiments.latest<ReducedOrderResult>('ReducedOrderModel');
+  private readonly adjoint = this.experiments.latest<AdjointCheckResult>('AdjointGradientCheck');
   readonly f = this.store.frame;
   readonly fields = this.store.fields;
   readonly fmt = fmt;
@@ -124,15 +134,20 @@ export class OverviewPage {
       return [];
     }
     const e = f.estimation;
+    const femRow = (this.fem()?.result.manufactured ?? []).filter((r) => r.method === 'FEM').at(-1);
+    const battery = this.fem()?.result.battery.at(-1);
+    const rom = this.rom()?.result;
+    const romRow = rom?.comparison.find((c) => c.family === 'Source-basis family' && c.modes === rom.selectedModes);
+    const optimizer = f.cooling.optimizer === 'AdjointReducedOrder' ? 'adjoint · POD ROM' : f.cooling.optimizer === 'PenaltyFiniteDifference' ? 'finite differences' : 'adjoint · full order';
     return [
-      { title: 'Sparse sensors', value: `${f.sensors.length} thermistors`, detail: `${e?.measurementCount ?? 0} samples` },
-      { title: 'Forward model', value: 'Crank–Nicolson', detail: '40×20 FV grid · Δt = 5 s' },
-      { title: 'Inverse problem', value: `λ = ${e ? e.relativeLambda.toExponential(1) : '—'}`, detail: `${e?.unknowns ?? 91} unknowns · ${e?.lambdaSelection ?? 'GCV'}` },
-      { title: 'Source estimate', value: f.estimatedHotspot ? `${f.estimatedHotspot.peakPower.toFixed(0)} kW/m³` : '—', detail: `hotspot err ${fmt(f.hotspotErrorMm, 1)} mm` },
-      { title: 'State estimate', value: `RMSE ${fmt(e?.temperatureRmse, 3)} K`, detail: `T̂max ${fmt(f.estimate?.max, 2)} °C` },
-      { title: 'Prediction', value: `${fmt(f.forecast?.unmitigatedPeak, 1)} °C`, detail: '600 s horizon, no action' },
-      { title: 'Optimisation', value: `${fmt(f.forecast?.plannedPeak, 1)} °C`, detail: `${f.cooling.optimizerEvaluations ?? 0} PDE solves` },
-      { title: 'Cooling decision', value: pct(f.cooling.level, 1), detail: f.mode === 'Autonomous' ? 'applied (MPC)' : f.mode.toLowerCase() },
+      { title: 'Thermal model', route: '/model', value: 'Parabolic PDE', detail: 'ρcₚTₜ = ∇·k∇T + q − H(u)(T − T_c)' },
+      { title: 'FVM / FEM solve', route: '/methods', value: `FEM L² p = ${fmt(femRow?.orderL2, 2)}`, detail: `FVM–FEM Δ ${pow10(battery?.fieldRmsDifference)} K` },
+      { title: 'Sparse sensors', route: '/twin', value: `${f.sensors.length} thermistors`, detail: `${e?.measurementCount ?? 0} samples · σ = 0.1 K` },
+      { title: 'Inverse source', route: '/inverse', value: `${fmt(f.hotspotErrorMm, 1)} mm`, detail: `λ = ${e ? e.relativeLambda.toExponential(1) : '—'} (GCV) · RMSE ${fmt(e?.temperatureRmse, 3)} K` },
+      { title: 'POD reduced model', route: '/rom', value: rom ? `r = ${rom.selectedModes} of ${rom.fullDimension}` : '—', detail: `ROM error ${fmt(romRow?.rmse, 3)} K` },
+      { title: 'Forecast', route: '/thermal', value: `${fmt(f.forecast?.unmitigatedPeak, 1)} °C`, detail: '600 s horizon, no action' },
+      { title: 'Adjoint optimisation', route: '/optimization', value: `${fmt(f.forecast?.plannedPeak, 1)} °C`, detail: `${optimizer} · ∇ error ${pow10(this.adjoint()?.result.bestRelativeError)}` },
+      { title: 'MPC cooling', route: '/cooling', value: pct(f.cooling.level, 1), detail: f.mode === 'Autonomous' ? `applied · ${fmt(f.cooling.optimizerMs, 0)} ms/solve` : f.mode.toLowerCase() },
     ];
   });
 

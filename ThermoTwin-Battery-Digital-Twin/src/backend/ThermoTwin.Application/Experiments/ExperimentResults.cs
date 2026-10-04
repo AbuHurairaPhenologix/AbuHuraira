@@ -83,4 +83,5 @@ public sealed record CoolingComparisonResult(
     IReadOnlyList<StrategyOutcome> Strategies,
     IReadOnlyList<OptimizationTracePoint> OptimizationHistory,
     double OptimizationMs,
-    int OptimizationEvaluations);
+    int OptimizationEvaluations,
+    int OptimizationAdjointSolves = 0);

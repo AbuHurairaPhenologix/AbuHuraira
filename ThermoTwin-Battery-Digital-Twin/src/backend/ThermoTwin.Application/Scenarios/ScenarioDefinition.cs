@@ -109,8 +109,24 @@ public sealed record EstimatorSettings(
     double FixedLambda = 1e-4,
     double EstimationInterval = 30);
 
+/// <summary>Which optimiser the model-predictive controller uses.</summary>
+public enum CoolingOptimizerKind
+{
+    /// <summary>Original method: max-temperature exterior penalty, finite-difference gradient (K + 1 PDE solves per gradient).</summary>
+    PenaltyFiniteDifference,
+
+    /// <summary>PDE-constrained optimisation on the full-order model with the discrete adjoint gradient.</summary>
+    AdjointFullOrder,
+
+    /// <summary>Adjoint optimisation on the POD reduced-order model, certified on the full-order model (with fallback).</summary>
+    AdjointReducedOrder,
+}
+
 /// <param name="ControlMargin">Back-off below T_safe used by the optimiser to absorb model mismatch [K].</param>
 /// <param name="ForecastLead">Lead time of the tracked "prediction vs actual" series [s].</param>
+/// <param name="Optimizer">Optimiser used by MPC.</param>
+/// <param name="RomModes">POD modes r of the reduced model (only for <see cref="CoolingOptimizerKind.AdjointReducedOrder"/>).</param>
+/// <param name="RomValidationThreshold">Largest accepted |peak_ROM − peak_FOM| before the ROM plan is rejected [K].</param>
 public sealed record ControlSettings(
     double SafeTemperature = 45,
     double CriticalTemperature = 55,
@@ -119,7 +135,10 @@ public sealed record ControlSettings(
     double SegmentDuration = 100,
     double PredictionTimeStep = 10,
     double ControlInterval = 60,
-    double ForecastLead = 300);
+    double ForecastLead = 300,
+    CoolingOptimizerKind Optimizer = CoolingOptimizerKind.AdjointFullOrder,
+    int RomModes = 40,
+    double RomValidationThreshold = 0.25);
 
 /// <param name="StepsPerFrame">Solver steps advanced per streamed frame.</param>
 /// <param name="FrameIntervalMs">Wall-clock delay between frames (playback speed).</param>

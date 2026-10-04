@@ -48,4 +48,22 @@ public enum ExperimentKind
     NoiseRobustness,
     ForecastAccuracy,
     CoolingComparison,
+
+    /// <summary>P1 finite-element convergence and FVM–FEM cross-validation.</summary>
+    FemVerification,
+
+    /// <summary>Discrete adjoint gradient against finite differences; gradient cost versus number of controls.</summary>
+    AdjointGradientCheck,
+
+    /// <summary>PDE-constrained optimisation with adjoint vs finite-difference gradients, KKT diagnostics.</summary>
+    OptimizationBenchmark,
+
+    /// <summary>POD spectrum, full-order vs reduced-order accuracy and speed, ROM-accelerated optimisation.</summary>
+    ReducedOrderModel,
+
+    /// <summary>Closed-loop MPC on the plant with the legacy, full-order adjoint and reduced-order adjoint optimisers.</summary>
+    ReducedOrderControl,
+
+    /// <summary>Local sensitivity, Fisher information, collinearity and bounded parameter estimation.</summary>
+    ParameterIdentifiability,
 }

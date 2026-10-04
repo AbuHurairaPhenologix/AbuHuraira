@@ -91,7 +91,20 @@ export class ExperimentsPage implements OnInit {
   private readonly store = inject(ExperimentStore);
   private readonly twin = inject(TwinStore);
 
-  readonly kinds: ExperimentKind[] = ['NumericalConvergence', 'Regularization', 'SensorDensity', 'NoiseRobustness', 'ForecastAccuracy', 'CoolingComparison'];
+  readonly kinds: ExperimentKind[] = [
+    'NumericalConvergence',
+    'FemVerification',
+    'Regularization',
+    'SensorDensity',
+    'NoiseRobustness',
+    'ParameterIdentifiability',
+    'ForecastAccuracy',
+    'ReducedOrderModel',
+    'AdjointGradientCheck',
+    'OptimizationBenchmark',
+    'CoolingComparison',
+    'ReducedOrderControl',
+  ];
   readonly titles = EXPERIMENT_TITLES;
   readonly overview = signal<ExperimentOverview | null>(null);
   readonly runs = signal<SimulationRunDto[]>([]);

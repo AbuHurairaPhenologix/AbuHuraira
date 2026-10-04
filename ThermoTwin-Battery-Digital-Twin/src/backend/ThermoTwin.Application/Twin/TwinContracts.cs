@@ -33,6 +33,14 @@ public sealed record FieldDto(
 
         return new FieldDto(key, label, unit, grid.Nx, grid.Ny, grid.LengthX, grid.LengthY, min, max, rows);
     }
+
+    /// <summary>Field given directly as rows (j) of columns (i) — e.g. nodal finite-element values on (nx + 1) × (ny + 1) vertices.</summary>
+    public static FieldDto FromRows(string key, string label, string unit, double lengthX, double lengthY, double[][] rows, double scale = 1.0, int decimals = 3)
+    {
+        var copy = rows.Select(r => r.Select(v => Math.Round(v * scale, decimals)).ToArray()).ToArray();
+        var all = copy.SelectMany(r => r).ToArray();
+        return new FieldDto(key, label, unit, copy[0].Length, copy.Length, lengthX, lengthY, all.Min(), all.Max(), copy);
+    }
 }
 
 public sealed record TemperatureStats(double Max, double Min, double Mean, double Spread, double MaxX, double MaxY);
@@ -51,7 +59,12 @@ public sealed record CoolingDto(
     double EnergyJoules,
     double? PlannedEnergyJoules,
     int? OptimizerEvaluations,
-    double? OptimizerMs);
+    double? OptimizerMs,
+    string? Optimizer = null,
+    int? AdjointSolves = null,
+    double? ProjectedGradientNorm = null,
+    double? RomValidationError = null,
+    bool? RomFallback = null);
 
 public sealed record ForecastDto(
     double IssuedAt,

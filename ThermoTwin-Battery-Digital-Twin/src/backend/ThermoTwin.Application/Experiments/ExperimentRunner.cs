@@ -18,7 +18,7 @@ namespace ThermoTwin.Application.Experiments;
 /// Reproducible numerical experiments. Every number reported by the dashboard and the README is
 /// produced here from actual solver runs of the configured scenario (default: the built-in demo).
 /// </summary>
-public sealed class ExperimentRunner
+public sealed partial class ExperimentRunner
 {
     private readonly ScenarioDefinition _scenario;
     private readonly ScenarioFactory _factory;
@@ -309,23 +309,19 @@ public sealed class ExperimentRunner
         var referenceEnergy = cooling.RatedPower * duration;
 
         // Identify the hidden source from a previous charge cycle run with baseline cooling.
-        var learningPlant = _factory.Plant(seedOffset: 500);
-        var estimator = _factory.Estimator();
         var total = (int)Math.Round(duration / _scenario.Solver.TimeStep);
-        for (var n = 0; n < total; n++)
-        {
-            estimator.Assimilate(_scenario.Cooling.BaselineLevel, learningPlant.Step(_scenario.Cooling.BaselineLevel));
-        }
-
-        var identified = estimator.SolveAuto(_scenario.Estimator.LambdaSelection, _scenario.Estimator.Regularization,
-            _scenario.Sensors.NoiseStd, _scenario.Estimator.FixedLambda);
+        var identifiedSource = IdentifiedSource();
         var initial = _factory.ModelGrid().CreateField(_scenario.Environment.InitialTemperature);
+        var guess = Enumerable.Repeat(0.3, segments).ToArray();
         var optimizer = new CoolingOptimizer(_factory.Predictor());
 
+        // PDE-constrained optimum (Moreau–Yosida penalty, discrete adjoint, projected quasi-Newton).
         var sw = Stopwatch.StartNew();
-        var optimized = optimizer.Optimize(initial, identified.SourceField, 0, options, Enumerable.Repeat(0.3, segments).ToArray());
+        var optimized = new AdjointCoolingOptimizer(new FullOrderThermalDynamics(_factory.PredictionSolver()), _factory.LoadProfile(), cooling)
+            .Optimize(initial, identifiedSource, 0, options, guess);
         var optimizationMs = sw.Elapsed.TotalMilliseconds;
-        var minimumConstant = optimizer.MinimumFeasibleConstantLevel(initial, identified.SourceField, 0, options);
+        var legacyOptimized = optimizer.Optimize(initial, identifiedSource, 0, options, guess);
+        var minimumConstant = optimizer.MinimumFeasibleConstantLevel(initial, identifiedSource, 0, options);
 
         var strategies = new List<StrategyOutcome>
         {
@@ -335,8 +331,11 @@ public sealed class ExperimentRunner
             Evaluate("full", "Constant full cooling", "Pump at 100 % for the whole charge (conservative rule).", _ => 1),
             Evaluate("min-constant", $"Constant minimal-feasible ({minimumConstant:P1})",
                 "Smallest constant level that satisfies T_max ≤ T_safe − margin on the twin (bisection).", _ => minimumConstant),
-            Evaluate("optimized", "Optimised schedule (open loop)",
-                $"{segments}×{segmentDuration:0} s piecewise-constant plan from the penalty/projected-gradient optimiser.",
+            Evaluate("optimized-legacy", "Original optimiser (open loop)",
+                $"{segments}×{segmentDuration:0} s plan from the original max-temperature penalty / finite-difference optimiser.",
+                t => legacyOptimized.Plan.LevelAt(t)),
+            Evaluate("optimized", "PDE-constrained optimum (open loop)",
+                $"{segments}×{segmentDuration:0} s plan from the adjoint-based PDE-constrained optimiser (pointwise state constraint, Moreau–Yosida penalty).",
                 t => optimized.Plan.LevelAt(t)),
             EvaluateMpc(),
         };
@@ -351,7 +350,8 @@ public sealed class ExperimentRunner
             strategies,
             optimized.History.Select(h => new OptimizationTracePoint(h.Iteration, h.Penalty, h.Objective, h.EnergyTerm, h.Violation, h.PeakTemperature)).ToArray(),
             optimizationMs,
-            optimized.Evaluations);
+            optimized.Evaluations,
+            optimized.AdjointSolves);
 
         StrategyOutcome Evaluate(string key, string name, string description, Func<double, double> policy)
         {
@@ -402,7 +402,7 @@ public sealed class ExperimentRunner
             }
 
             return Outcome("mpc", "Closed-loop MPC (live twin)",
-                "Receding-horizon control from the live digital twin: no prior knowledge of the defect, re-estimated every 30 s, re-optimised every 60 s.",
+                "Receding-horizon control from the live digital twin: no prior knowledge of the defect, re-estimated every 30 s, re-optimised every 60 s by the adjoint PDE-constrained optimiser.",
                 times, maxT, levels, engine.CoolingEnergy, smooth);
         }
 
@@ -458,6 +458,12 @@ public sealed class ExperimentRunner
         ExperimentKind.NoiseRobustness => "Reconstruction accuracy versus sensor noise level",
         ExperimentKind.ForecastAccuracy => "Predicted versus actual peak temperature at several issue times",
         ExperimentKind.CoolingComparison => "No / constant / optimised / MPC cooling evaluated on the ground-truth plant",
+        ExperimentKind.FemVerification => "P1 finite-element convergence (L², H¹) and cross-validation against the finite-volume solver",
+        ExperimentKind.AdjointGradientCheck => "Discrete adjoint gradient versus finite differences, Taylor test and gradient cost versus number of controls",
+        ExperimentKind.OptimizationBenchmark => "PDE-constrained cooling optimisation: adjoint vs finite-difference gradients, ROM, KKT diagnostics",
+        ExperimentKind.ReducedOrderModel => "POD spectrum, full-order vs reduced-order accuracy and speed, ROM-accelerated optimisation",
+        ExperimentKind.ReducedOrderControl => "Closed-loop MPC on the plant with the original, adjoint full-order and adjoint ROM optimisers",
+        ExperimentKind.ParameterIdentifiability => "Sensitivity matrix, Fisher information, collinearity and bounded parameter estimation",
         _ => kind.ToString(),
     };
 }

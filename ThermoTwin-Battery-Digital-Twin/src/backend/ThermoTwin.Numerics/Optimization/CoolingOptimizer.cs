@@ -23,6 +23,10 @@ public sealed record OptimizationIteration(int Iteration, double Penalty, double
 /// <param name="CoolingEnergy">E(u*) = Σ P(u_k) Δt [J].</param>
 /// <param name="PeakTemperature">max_t max_x T over the horizon [°C].</param>
 /// <param name="MaxViolation">max(0, peak − T_safe) [K].</param>
+/// <param name="Evaluations">Forward PDE (or ROM) solves performed.</param>
+/// <param name="AdjointSolves">Backward adjoint solves (0 for finite-difference optimisers).</param>
+/// <param name="Kkt">First-order optimality diagnostics at the returned plan (PDE-constrained optimiser only).</param>
+/// <param name="Model">Name of the dynamics the plan was optimised on.</param>
 public sealed record CoolingOptimizationResult(
     CoolingPlan Plan,
     double Objective,
@@ -32,7 +36,23 @@ public sealed record CoolingOptimizationResult(
     bool Feasible,
     int Evaluations,
     IReadOnlyList<OptimizationIteration> History,
-    ThermalForecast Forecast);
+    ThermalForecast Forecast,
+    int AdjointSolves = 0,
+    KktDiagnostics? Kkt = null,
+    string Model = "Full-order FVM");
+
+/// <summary>Strategy interface so the digital twin can switch between optimisers.</summary>
+public interface ICoolingOptimizer
+{
+    string Name { get; }
+
+    CoolingOptimizationResult Optimize(
+        ReadOnlySpan<double> initialState,
+        ReadOnlySpan<double> sourceShape,
+        double startTime,
+        CoolingOptimizationOptions options,
+        double[]? initialGuess = null);
+}
 
 /// <summary>
 /// Constrained cooling optimisation
@@ -51,11 +71,13 @@ public sealed record CoolingOptimizationResult(
 /// P(u) = clamp(u, 0, 1). A final feasibility repair raises all levels uniformly (bisection) if the
 /// penalty solution still violates T_safe by more than the tolerance.
 /// </summary>
-public sealed class CoolingOptimizer
+public sealed class CoolingOptimizer : ICoolingOptimizer
 {
     private readonly ThermalPredictor _predictor;
 
     public CoolingOptimizer(ThermalPredictor predictor) => _predictor = predictor;
+
+    public string Name => "Penalty + finite-difference projected gradient (max-temperature penalty)";
 
     public CoolingOptimizationResult Optimize(
         ReadOnlySpan<double> initialState,

@@ -7,6 +7,8 @@ using ThermoTwin.Application.Experiments;
 using ThermoTwin.Domain.Enums;
 
 // Usage: thermotwin [output-directory] [--only Kind1,Kind2]
+//   Kinds: NumericalConvergence, Regularization, SensorDensity, NoiseRobustness, ForecastAccuracy, CoolingComparison,
+//          FemVerification, AdjointGradientCheck, OptimizationBenchmark, ReducedOrderModel, ReducedOrderControl, ParameterIdentifiability
 // Runs the experiments on the built-in demo scenario and writes:
 //   <out>/<kind>.json      full payload (same JSON the API stores)
 //   <out>/*.csv            tables used in the README
@@ -176,6 +178,8 @@ if (results.TryGetValue(ExperimentKind.CoolingComparison, out var ccObj) && ccOb
     md.AppendLine();
 }
 
+await MathematicsExport.WriteAsync(results, output, md);
+
 md.AppendLine("## Experiment wall-clock time");
 md.AppendLine();
 foreach (var (kind, seconds) in timings)
@@ -194,5 +198,11 @@ static string Slug(ExperimentKind kind) => kind switch
     ExperimentKind.NoiseRobustness => "noise-robustness",
     ExperimentKind.ForecastAccuracy => "forecast-accuracy",
     ExperimentKind.CoolingComparison => "cooling-comparison",
+    ExperimentKind.FemVerification => "fem-verification",
+    ExperimentKind.AdjointGradientCheck => "adjoint-gradient-check",
+    ExperimentKind.OptimizationBenchmark => "optimization-benchmark",
+    ExperimentKind.ReducedOrderModel => "reduced-order-model",
+    ExperimentKind.ReducedOrderControl => "rom-mpc-comparison",
+    ExperimentKind.ParameterIdentifiability => "parameter-identifiability",
     _ => kind.ToString().ToLowerInvariant(),
 };

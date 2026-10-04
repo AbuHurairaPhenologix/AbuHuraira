@@ -19,8 +19,9 @@ import { CardComponent, StatComponent } from '../shared/ui';
           <p>
             <span class="math">min J(u) = Σ P(uₖ)Δt / E<sub>ref</sub> + w Σ(Δuₖ)²</span> subject to
             <span class="math">T<sub>max</sub>(t; u) ≤ T<sub>safe</sub></span> and <span class="math">0 ≤ uₖ ≤ 1</span>,
-            with pump power P(u) = P<sub>rated</sub>u³. Solved by an exterior quadratic penalty method with projected-gradient inner iterations;
-            each gradient component costs one forward PDE solve.
+            with pump power P(u) = P<sub>rated</sub>u³ — a PDE-constrained optimal-control problem. The pointwise state constraint is relaxed by a
+            Moreau–Yosida penalty and the gradient comes from the discrete adjoint (one backward sweep for all segments); see
+            <a href="/optimization">PDE-Constrained Optimisation</a> for the derivation, the gradient check and the comparison with finite differences.
           </p>
         </div>
       </div>
@@ -28,7 +29,7 @@ import { CardComponent, StatComponent } from '../shared/ui';
       @if (store.frame(); as f) {
         <div class="grid g-6">
           <tt-stat label="Applied cooling" [value]="pct(f.cooling.level, 1)" [hint]="fmt(f.cooling.powerWatts, 2) + ' W'" [accent]="true" />
-          <tt-stat label="Recommended next" [value]="pct(f.cooling.recommendedLevel, 1)" [hint]="(f.cooling.optimizerEvaluations ?? 0) + ' PDE solves · ' + fmt(f.cooling.optimizerMs, 0) + ' ms'" />
+          <tt-stat label="Recommended next" [value]="pct(f.cooling.recommendedLevel, 1)" [hint]="optimizerHint()" />
           <tt-stat label="Forecast peak · baseline" [value]="fmt(f.forecast?.unmitigatedPeak, 2)" unit="°C" hint="no action (15 % cooling)" />
           <tt-stat label="Forecast peak · optimised" [value]="fmt(f.forecast?.plannedPeak, 2)" unit="°C" [hint]="'control target ' + (f.safeTemperature - 1) + ' °C'" [accent]="true" />
           <tt-stat label="Peak so far · controlled" [value]="fmt(peak().controlled, 2)" unit="°C" [hint]="'counterfactual ' + fmt(peak().counterfactual, 2) + ' °C'" />
@@ -76,7 +77,7 @@ import { CardComponent, StatComponent } from '../shared/ui';
           <tt-card heading="Cooling energy by strategy" sub="Total pump energy over the charge (log scale)">
             <tt-chart [config]="energyChart()" [height]="270" label="Cooling energy" />
           </tt-card>
-          <tt-card heading="Optimisation objective" [sub]="'Penalty continuation μ = 10 → 300 → 10⁴; ' + c.result.optimizationEvaluations + ' PDE solves in ' + (c.result.optimizationMs / 1000).toFixed(1) + ' s'">
+          <tt-card heading="Optimisation objective" [sub]="'Adjoint PDE-constrained optimiser, μ = 10² → 10⁵; ' + c.result.optimizationEvaluations + ' forward + ' + c.result.optimizationAdjointSolves + ' adjoint solves in ' + (c.result.optimizationMs / 1000).toFixed(1) + ' s'">
             <tt-chart [config]="objectiveChart()" [height]="270" label="Optimisation objective" />
           </tt-card>
         </div>
@@ -99,6 +100,16 @@ export class CoolingPage {
   readonly energy = energy;
 
   private readonly end = computed(() => this.store.frame()?.duration ?? 1800);
+
+  readonly optimizerHint = computed(() => {
+    const c = this.store.frame()?.cooling;
+    if (!c) {
+      return '';
+    }
+    const name = c.optimizer === 'AdjointReducedOrder' ? 'POD-ROM adjoint' : c.optimizer === 'PenaltyFiniteDifference' ? 'finite differences' : 'adjoint';
+    const solves = `${c.optimizerEvaluations ?? 0} fwd + ${c.adjointSolves ?? 0} adj`;
+    return `${name} · ${solves} · ${fmt(c.optimizerMs, 0)} ms`;
+  });
 
   readonly peak = computed(() => {
     const h = this.store.history();

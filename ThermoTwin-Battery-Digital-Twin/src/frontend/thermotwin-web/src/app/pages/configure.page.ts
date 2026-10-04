@@ -104,7 +104,7 @@ const SECTIONS: { title: string; note: string; fields: FieldSpec[] }[] = [
   },
   {
     title: 'Prediction & control',
-    note: 'Receding-horizon optimisation with a safety back-off margin.',
+    note: 'Receding-horizon PDE-constrained optimisation with a safety back-off margin. The ROM option optimises on a POD model and certifies every plan on the full model.',
     fields: [
       { label: 'T_safe', path: 'control.safeTemperature', unit: '°C', step: 1 },
       { label: 'T_critical', path: 'control.criticalTemperature', unit: '°C', step: 1 },
@@ -112,6 +112,9 @@ const SECTIONS: { title: string; note: string; fields: FieldSpec[] }[] = [
       { label: 'Horizon segments', path: 'control.horizonSegments', step: 1 },
       { label: 'Segment length', path: 'control.segmentDuration', unit: 's', step: 10 },
       { label: 'Control interval', path: 'control.controlInterval', unit: 's', step: 5 },
+      { label: 'MPC optimiser', path: 'control.optimizer', options: ['AdjointFullOrder', 'AdjointReducedOrder', 'PenaltyFiniteDifference'] },
+      { label: 'ROM modes r', path: 'control.romModes', step: 5 },
+      { label: 'ROM error limit', path: 'control.romValidationThreshold', unit: 'K', step: 0.05 },
     ],
   },
   {

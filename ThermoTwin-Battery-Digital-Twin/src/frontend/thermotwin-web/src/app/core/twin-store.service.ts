@@ -103,4 +103,10 @@ export const EXPERIMENT_TITLES: Record<ExperimentKind, string> = {
   NoiseRobustness: 'Noise robustness study',
   ForecastAccuracy: 'Forecast accuracy',
   CoolingComparison: 'Cooling strategy comparison',
+  FemVerification: 'FEM convergence & FVM–FEM comparison',
+  AdjointGradientCheck: 'Adjoint gradient validation',
+  OptimizationBenchmark: 'PDE-constrained optimisation benchmark',
+  ReducedOrderModel: 'POD reduced-order model',
+  ReducedOrderControl: 'Reduced-order vs full-order MPC',
+  ParameterIdentifiability: 'Parameter identifiability',
 };

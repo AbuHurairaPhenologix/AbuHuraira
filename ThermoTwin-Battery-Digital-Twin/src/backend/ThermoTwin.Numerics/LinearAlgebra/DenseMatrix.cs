@@ -116,6 +116,125 @@ public sealed class DenseMatrix
 
     /// <summary>Solves the SPD system this · x = b by dense Cholesky factorisation.</summary>
     public double[] SolveSpd(ReadOnlySpan<double> b) => DenseCholesky.Factor(this).Solve(b);
+
+    public static DenseMatrix Identity(int size)
+    {
+        var m = new DenseMatrix(size, size);
+        for (var i = 0; i < size; i++)
+        {
+            m[i, i] = 1;
+        }
+
+        return m;
+    }
+
+    public DenseMatrix Transpose()
+    {
+        var t = new DenseMatrix(Columns, Rows);
+        for (var i = 0; i < Rows; i++)
+        {
+            for (var j = 0; j < Columns; j++)
+            {
+                t[j, i] = this[i, j];
+            }
+        }
+
+        return t;
+    }
+
+    /// <summary>Matrix product this · other.</summary>
+    public DenseMatrix Multiply(DenseMatrix other)
+    {
+        if (Columns != other.Rows)
+        {
+            throw new ArgumentException("Inner dimensions do not agree.", nameof(other));
+        }
+
+        var result = new DenseMatrix(Rows, other.Columns);
+        for (var i = 0; i < Rows; i++)
+        {
+            for (var k = 0; k < Columns; k++)
+            {
+                var aik = _data[i * Columns + k];
+                if (aik == 0.0)
+                {
+                    continue;
+                }
+
+                for (var j = 0; j < other.Columns; j++)
+                {
+                    result._data[i * other.Columns + j] += aik * other._data[k * other.Columns + j];
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>y = thisᵀ x.</summary>
+    public double[] MultiplyTransposed(ReadOnlySpan<double> x)
+    {
+        var y = new double[Columns];
+        for (var i = 0; i < Rows; i++)
+        {
+            var xi = x[i];
+            if (xi == 0.0)
+            {
+                continue;
+            }
+
+            var offset = i * Columns;
+            for (var j = 0; j < Columns; j++)
+            {
+                y[j] += _data[offset + j] * xi;
+            }
+        }
+
+        return y;
+    }
+
+    public double[] Column(int column)
+    {
+        var c = new double[Rows];
+        for (var i = 0; i < Rows; i++)
+        {
+            c[i] = _data[i * Columns + column];
+        }
+
+        return c;
+    }
+
+    /// <summary>Inverse of an SPD matrix by Cholesky (n solves) — small matrices only.</summary>
+    public DenseMatrix InverseSpd()
+    {
+        var factor = DenseCholesky.Factor(this);
+        var inverse = new DenseMatrix(Rows, Rows);
+        var e = new double[Rows];
+        for (var j = 0; j < Rows; j++)
+        {
+            Array.Clear(e);
+            e[j] = 1;
+            var column = factor.Solve(e);
+            for (var i = 0; i < Rows; i++)
+            {
+                inverse[i, j] = column[i];
+            }
+        }
+
+        return inverse;
+    }
+
+    public double[][] ToRows()
+    {
+        var rows = new double[Rows][];
+        for (var i = 0; i < Rows; i++)
+        {
+            rows[i] = new double[Columns];
+            Array.Copy(_data, i * Columns, rows[i], 0, Columns);
+        }
+
+        return rows;
+    }
 }
 
 /// <summary>Dense Cholesky factorisation A = L Lᵀ, factor once / solve many.</summary>

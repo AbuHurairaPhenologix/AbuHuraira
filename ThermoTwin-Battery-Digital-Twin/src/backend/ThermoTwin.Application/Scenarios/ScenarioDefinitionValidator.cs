@@ -78,12 +78,23 @@ public sealed class ScenarioDefinitionValidator : AbstractValidator<ScenarioDefi
         RuleFor(s => s.Control.SegmentDuration).InclusiveBetween(10, 1_800).WithName("Control.SegmentDuration");
         RuleFor(s => s.Control.PredictionTimeStep).InclusiveBetween(0.5, 60).WithName("Control.PredictionTimeStep");
         RuleFor(s => s.Control.ControlInterval).GreaterThanOrEqualTo(s => s.Solver.TimeStep).WithName("Control.ControlInterval");
+        RuleFor(s => s.Control.Optimizer).IsInEnum().WithName("Control.Optimizer");
+        RuleFor(s => s.Control.RomModes).InclusiveBetween(2, 80).WithName("Control.RomModes");
+        RuleFor(s => s.Control.RomValidationThreshold).InclusiveBetween(0.01, 5).WithName("Control.RomValidationThreshold");
+        RuleFor(s => s.Control)
+            .Must(c => IsMultiple(c.SegmentDuration, c.PredictionTimeStep))
+            .When(s => s.Control.Optimizer != CoolingOptimizerKind.PenaltyFiniteDifference)
+            .OverridePropertyName("Control.SegmentDuration")
+            .WithMessage("For the PDE-constrained optimiser the segment duration must be a multiple of the prediction time step.");
 
         RuleFor(s => s.Playback.StepsPerFrame).InclusiveBetween(1, 50).WithName("Playback.StepsPerFrame");
         RuleFor(s => s.Playback.FrameIntervalMs).InclusiveBetween(0, 5_000).WithName("Playback.FrameIntervalMs");
     }
 
     private static bool BeStableForExplicitScheme(ScenarioDefinition s) => s.Solver.TimeStep <= ExplicitLimit(s);
+
+    private static bool IsMultiple(double value, double step) =>
+        step > 0 && Math.Abs(value / step - Math.Round(value / step)) < 1e-9 && value >= step;
 
     /// <summary>Explicit stability limit on the (finer) plant grid, which is the binding constraint.</summary>
     private static double ExplicitLimit(ScenarioDefinition s)

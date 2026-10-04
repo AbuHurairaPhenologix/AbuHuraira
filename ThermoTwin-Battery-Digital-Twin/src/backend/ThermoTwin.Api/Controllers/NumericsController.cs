@@ -1,5 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using ThermoTwin.Application.Analysis;
+using ThermoTwin.Application.Experiments;
 using ThermoTwin.Application.Scenarios;
 using ThermoTwin.Numerics.Grid;
 using ThermoTwin.Numerics.Pde;
@@ -52,4 +54,24 @@ public sealed class NumericsController : ControllerBase
         var alpha = model.Material.Diffusivity;
         return Ok(new StabilityAnalysisDto(alpha, g.LengthY * g.LengthY / alpha, scenario.Solver.TimeStep, grids, validation.IsValid, issues));
     }
+
+    /// <summary>
+    /// Structured P1 triangulation of the cell (nodes, counter-clockwise triangles, boundary segments) — the mesh used
+    /// by the finite-element solver, for visualisation.
+    /// </summary>
+    [HttpGet("fem/mesh")]
+    [ProducesResponseType<FemMeshDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public ActionResult<FemMeshDto> FemMesh([FromQuery] FemMeshRequest request, [FromServices] OnDemandAnalysis analysis) =>
+        Ok(analysis.FemMesh(request));
+
+    /// <summary>
+    /// Discrete adjoint gradient of the PDE-constrained cooling objective versus central finite differences for a random
+    /// control vector on the demo cell (one forward + one backward sweep vs 2K forward solves).
+    /// </summary>
+    [HttpPost("adjoint/gradient-check")]
+    [ProducesResponseType<GradientCheckResponse>(StatusCodes.Status200OK)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
+    public ActionResult<GradientCheckResponse> GradientCheck(GradientCheckRequest request, [FromServices] OnDemandAnalysis analysis) =>
+        Ok(analysis.GradientCheck(request));
 }

@@ -24,3 +24,9 @@ coverage/
 # ---- Python ----
 __pycache__/
 .venv/
+*.tsbuildinfo
+.vitest/
+
+# ---- Screenshot / browser tooling ----
+playwright-report/
+test-results/

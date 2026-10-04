@@ -9,6 +9,7 @@ using ThermoTwin.Numerics.LinearAlgebra;
 using ThermoTwin.Numerics.Optimization;
 using ThermoTwin.Numerics.Physics;
 using ThermoTwin.Numerics.Prediction;
+using ThermoTwin.Numerics.ReducedOrder;
 using ThermoTwin.Numerics.Sensors;
 using ThermoTwin.Numerics.Simulation;
 
@@ -33,7 +34,7 @@ public sealed class DigitalTwinEngine
     private readonly BatteryPlant _counterfactual;
     private readonly InverseHeatSourceEstimator _estimator;
     private readonly ThermalPredictor _predictor;
-    private readonly CoolingOptimizer _optimizer;
+    private readonly ICoolingOptimizer _optimizer;
     private readonly CoolingModel _cooling;
     private readonly LoadProfile _load;
     private readonly Grid2D _grid;
@@ -62,6 +63,7 @@ public sealed class DigitalTwinEngine
     private double[]? _warmStart;
     private ThermalRisk _risk = ThermalRisk.Normal;
     private int _historyCursor;
+    private readonly MpcStatistics _statistics = new();
 
     public DigitalTwinEngine(ScenarioDefinition scenario, Guid runId)
     {
@@ -71,8 +73,9 @@ public sealed class DigitalTwinEngine
         _plant = _factory.Plant();
         _counterfactual = _factory.Plant(seedOffset: 1000);
         _estimator = _factory.Estimator();
-        _predictor = _factory.Predictor();
-        _optimizer = new CoolingOptimizer(_predictor);
+        var predictionSolver = _factory.PredictionSolver();
+        _predictor = new ThermalPredictor(predictionSolver, _factory.LoadProfile());
+        _optimizer = _factory.CoolingOptimizer(predictionSolver);
         _cooling = _factory.Cooling();
         _load = _factory.LoadProfile();
         _grid = _factory.ModelGrid();
@@ -115,6 +118,11 @@ public sealed class DigitalTwinEngine
     public double? HotspotErrorMm => _hotspotErrorMm;
 
     public ThermalRisk Risk => _risk;
+
+    /// <summary>Statistics of every MPC optimisation performed so far.</summary>
+    public MpcStatistics Statistics => _statistics;
+
+    public string OptimizerName => _optimizer.Name;
 
     /// <summary>Advances the twin by one solver step.</summary>
     public void Advance()
@@ -185,6 +193,7 @@ public sealed class DigitalTwinEngine
             var sw = Stopwatch.StartNew();
             _optimization = _optimizer.Optimize(estimate, solution.SourceField, Time, options, _warmStart);
             _optimizationMs = sw.Elapsed.TotalMilliseconds;
+            _statistics.Record(_optimization, _optimizationMs, (_optimizer as ReducedOrderCoolingOptimizer)?.LastReport);
             var levels = _optimization.Plan.Levels;
             _warmStart = [.. levels.Skip(1), levels[^1]];
 
@@ -264,7 +273,12 @@ public sealed class DigitalTwinEngine
             _energy,
             _optimization?.CoolingEnergy,
             _optimization?.Evaluations,
-            _optimization is null ? null : Math.Round(_optimizationMs, 1));
+            _optimization is null ? null : Math.Round(_optimizationMs, 1),
+            _scenario.Control.Optimizer.ToString(),
+            _optimization?.AdjointSolves,
+            _optimization?.Kkt is { } kkt ? kkt.ProjectedGradientNorm : null,
+            _statistics.LastValidationError,
+            _statistics.LastFellBack);
 
         ForecastDto? forecast = null;
         if (_plannedForecast is not null && _unmitigatedForecast is not null)
@@ -360,5 +374,57 @@ public sealed class DigitalTwinEngine
         var (x, y, max) = HotspotDetector.Maximum(_grid, field);
         var min = Vector.Min(field);
         return new TemperatureStats(Math.Round(max, 3), Math.Round(min, 3), Math.Round(Vector.Mean(field), 3), Math.Round(max - min, 3), x, y);
+    }
+}
+
+/// <summary>Running statistics of the MPC optimiser (wall time, PDE/ROM solves, ROM validation and fallbacks).</summary>
+public sealed class MpcStatistics
+{
+    private readonly List<double> _validationErrors = [];
+
+    public int Optimizations { get; private set; }
+
+    public double TotalMs { get; private set; }
+
+    public long ForwardSolves { get; private set; }
+
+    public long AdjointSolves { get; private set; }
+
+    public long FullOrderSolves { get; private set; }
+
+    public int Fallbacks { get; private set; }
+
+    public int CorrectionRounds { get; private set; }
+
+    public int Repairs { get; private set; }
+
+    public double? LastValidationError { get; private set; }
+
+    public bool? LastFellBack { get; private set; }
+
+    public double MeanValidationError => _validationErrors.Count == 0 ? 0 : _validationErrors.Average();
+
+    public double MaxValidationError => _validationErrors.Count == 0 ? 0 : _validationErrors.Max();
+
+    public void Record(CoolingOptimizationResult result, double milliseconds, RomOptimizationReport? rom)
+    {
+        Optimizations++;
+        TotalMs += milliseconds;
+        ForwardSolves += result.Evaluations;
+        AdjointSolves += result.AdjointSolves;
+        if (rom is not null)
+        {
+            FullOrderSolves += rom.FullOrderForwardSolves;
+            CorrectionRounds += rom.CorrectionRounds;
+            Repairs += rom.Repaired ? 1 : 0;
+            Fallbacks += rom.FellBack ? 1 : 0;
+            _validationErrors.Add(rom.ValidationError);
+            LastValidationError = rom.ValidationError;
+            LastFellBack = rom.FellBack;
+        }
+        else
+        {
+            FullOrderSolves += result.Evaluations;
+        }
     }
 }

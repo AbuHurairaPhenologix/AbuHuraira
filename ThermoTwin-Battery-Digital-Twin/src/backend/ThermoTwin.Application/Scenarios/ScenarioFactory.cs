@@ -4,6 +4,7 @@ using ThermoTwin.Numerics.Optimization;
 using ThermoTwin.Numerics.Pde;
 using ThermoTwin.Numerics.Physics;
 using ThermoTwin.Numerics.Prediction;
+using ThermoTwin.Numerics.ReducedOrder;
 using ThermoTwin.Numerics.Sensors;
 using ThermoTwin.Numerics.Simulation;
 
@@ -85,11 +86,59 @@ public sealed class ScenarioFactory
             grid.CreateField(Scenario.Environment.InitialTemperature));
     }
 
-    public ThermalPredictor Predictor() =>
-        new(new HeatEquationSolver(ThermalModel(), TimeScheme.CrankNicolson, Scenario.Control.PredictionTimeStep), LoadProfile());
+    public ThermalPredictor Predictor() => new(PredictionSolver(), LoadProfile());
+
+    /// <summary>Crank–Nicolson model used for forecasting and optimisation (Δt = prediction time step).</summary>
+    public HeatEquationSolver PredictionSolver() =>
+        new(ThermalModel(), TimeScheme.CrankNicolson, Scenario.Control.PredictionTimeStep);
 
     public CoolingOptimizationOptions OptimizationOptions(int? segments = null, double? segmentDuration = null) => new(
         SafeTemperature: Scenario.Control.SafeTemperature - Scenario.Control.ControlMargin,
         Segments: segments ?? Scenario.Control.HorizonSegments,
         SegmentDuration: segmentDuration ?? Scenario.Control.SegmentDuration);
+
+    /// <summary>
+    /// Offline POD training on the prediction model: Joule heating alone plus one localised source on every hat
+    /// function of the inverse problem's source basis, under a ramped cooling schedule over the charge, with
+    /// geometric snapshot times. No knowledge of the true defect is used.
+    /// </summary>
+    public (PodBasis Basis, SnapshotSet Snapshots, double TrainingMs, double PodMs) TrainPod(HeatEquationSolver solver, int maxModes = 80)
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        var grid = solver.Model.Grid;
+        var duration = Scenario.Solver.Duration;
+        var segment = Scenario.Control.SegmentDuration;
+        var segments = Math.Max(1, (int)Math.Round(duration / segment));
+        var ramp = new CoolingPlan(segment, Enumerable.Range(0, segments).Select(k => (double)k / Math.Max(1, segments - 1)).ToArray());
+        var peak = Scenario.HeatSource.Hotspots.Count > 0 ? Scenario.HeatSource.Hotspots.Max(h => h.PeakPower) : 450_000;
+        var cases = PodTrainer.SourceBasisCases(SourceBasis(grid), Scenario.HeatSource.UniformJouleHeating, peak, ramp);
+        var steps = (int)Math.Round(ramp.Horizon / solver.TimeStep);
+        var snapshots = PodTrainer.CollectSnapshots(new FullOrderThermalDynamics(solver), LoadProfile(),
+            grid.CreateField(Scenario.Environment.InitialTemperature), cases, PodTrainer.GeometricSampleSteps(steps, 6));
+        var trainingMs = sw.Elapsed.TotalMilliseconds;
+        sw.Restart();
+        var basis = PodBasis.Compute(snapshots, maxModes);
+        return (basis, snapshots, trainingMs, sw.Elapsed.TotalMilliseconds);
+    }
+
+    /// <summary>Builds the MPC optimiser selected by <see cref="ControlSettings.Optimizer"/>.</summary>
+    public ICoolingOptimizer CoolingOptimizer(HeatEquationSolver predictionSolver, PodBasis? pod = null)
+    {
+        var load = LoadProfile();
+        var cooling = Cooling();
+        switch (Scenario.Control.Optimizer)
+        {
+            case CoolingOptimizerKind.PenaltyFiniteDifference:
+                return new CoolingOptimizer(new ThermalPredictor(predictionSolver, load));
+            case CoolingOptimizerKind.AdjointReducedOrder:
+            {
+                pod ??= TrainPod(predictionSolver).Basis;
+                var rom = new ReducedThermalModel(pod, Math.Min(Scenario.Control.RomModes, pod.Rank), predictionSolver);
+                return new ReducedOrderCoolingOptimizer(rom, predictionSolver, load, cooling, null, Scenario.Control.RomValidationThreshold);
+            }
+
+            default:
+                return new AdjointCoolingOptimizer(new FullOrderThermalDynamics(predictionSolver), load, cooling);
+        }
+    }
 }

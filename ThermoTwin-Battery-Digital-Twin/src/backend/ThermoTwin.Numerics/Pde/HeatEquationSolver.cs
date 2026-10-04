@@ -48,6 +48,12 @@ public static class TimeSchemeExtensions
 /// </summary>
 public sealed class HeatEquationSolver
 {
+    /// <summary>
+    /// Bound on cached factorisations. An optimiser visits a continuum of cooling levels, so an unbounded
+    /// cache would grow with every line-search trial; when the bound is hit the cache is simply flushed.
+    /// </summary>
+    private const int MaxCachedFactorisations = 256;
+
     private readonly ConcurrentDictionary<long, BandedCholesky> _factorisations = new();
     private readonly double _theta;
     private readonly double _alpha;
@@ -166,9 +172,48 @@ public sealed class HeatEquationSolver
         return y;
     }
 
+    /// <summary>θ of the time scheme.</summary>
+    public double Theta => _theta;
+
+    /// <summary>σ(u) = H(u)/ρcₚ — the cold-plate sink rate [1/s].</summary>
+    public double SinkRate(double coolingLevel) => Model.Cooling.VolumetricCoefficient(coolingLevel, Model.Material) / _rhoC;
+
+    /// <summary>dσ/du = (h_max − h_min)/(δ ρcₚ) — constant because h(u) is affine on [0, 1] [1/s].</summary>
+    public double SinkSensitivity =>
+        (Model.Cooling.MaxHeatTransferCoefficient - Model.Cooling.MinHeatTransferCoefficient) / (Model.Material.Thickness * _rhoC);
+
+    /// <summary>
+    /// Solves L(u) x = b in place with L(u) = I − θΔt M(u) (identity for explicit Euler). L is symmetric,
+    /// so the same factor also solves the transposed (adjoint) system Lᵀ λ = b.
+    /// </summary>
+    public void SolveImplicitInPlace(Span<double> rhs, double coolingLevel)
+    {
+        if (_theta > 0)
+        {
+            GetFactorisation(coolingLevel).SolveInPlace(rhs);
+        }
+    }
+
+    /// <summary>y = R(u) x with R(u) = I + (1 − θ)Δt M(u) — the explicit half of the θ-step (symmetric, so R = Rᵀ).</summary>
+    public void ApplyExplicitOperator(ReadOnlySpan<double> x, Span<double> y, double coolingLevel)
+    {
+        Laplacian.Matrix.Multiply(x, y);
+        var sink = SinkRate(coolingLevel);
+        var c = (1 - _theta) * TimeStep;
+        for (var k = 0; k < y.Length; k++)
+        {
+            y[k] = x[k] + c * (_alpha * y[k] - sink * x[k]);
+        }
+    }
+
     private BandedCholesky GetFactorisation(double coolingLevel)
     {
         var key = (long)Math.Round(Math.Clamp(coolingLevel, 0, 1) * 1e9);
+        if (_factorisations.Count > MaxCachedFactorisations)
+        {
+            _factorisations.Clear();
+        }
+
         return _factorisations.GetOrAdd(key, _ =>
         {
             var sink = Model.Cooling.VolumetricCoefficient(coolingLevel, Model.Material) / _rhoC;

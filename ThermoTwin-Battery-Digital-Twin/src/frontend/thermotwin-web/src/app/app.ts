@@ -38,10 +38,20 @@ export class App implements OnInit {
       ],
     },
     {
+      title: 'Mathematics',
+      items: [
+        { path: '/model', label: 'Mathematical Model', icon: '∂' },
+        { path: '/methods', label: 'FVM · FEM', icon: '△' },
+        { path: '/inverse', label: 'Inverse Problem', icon: '⟲' },
+        { path: '/identifiability', label: 'Identifiability', icon: '≈' },
+        { path: '/rom', label: 'Reduced-Order Model', icon: 'Φ' },
+        { path: '/optimization', label: 'PDE-Constrained Opt.', icon: '∇' },
+      ],
+    },
+    {
       title: 'Analysis',
       items: [
         { path: '/thermal', label: 'Thermal Analysis', icon: '∿' },
-        { path: '/inverse', label: 'Inverse Problem', icon: '⟲' },
         { path: '/cooling', label: 'Cooling Optimisation', icon: '❄' },
       ],
     },

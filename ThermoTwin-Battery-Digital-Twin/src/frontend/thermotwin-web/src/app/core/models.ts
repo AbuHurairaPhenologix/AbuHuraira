@@ -10,7 +10,14 @@ export type ExperimentKind =
   | 'SensorDensity'
   | 'NoiseRobustness'
   | 'ForecastAccuracy'
-  | 'CoolingComparison';
+  | 'CoolingComparison'
+  | 'FemVerification'
+  | 'AdjointGradientCheck'
+  | 'OptimizationBenchmark'
+  | 'ReducedOrderModel'
+  | 'ReducedOrderControl'
+  | 'ParameterIdentifiability';
+export type CoolingOptimizerKind = 'PenaltyFiniteDifference' | 'AdjointFullOrder' | 'AdjointReducedOrder';
 
 export interface FieldDto {
   key: string;
@@ -61,6 +68,11 @@ export interface CoolingDto {
   plannedEnergyJoules: number | null;
   optimizerEvaluations: number | null;
   optimizerMs: number | null;
+  optimizer: CoolingOptimizerKind | null;
+  adjointSolves: number | null;
+  projectedGradientNorm: number | null;
+  romValidationError: number | null;
+  romFallback: boolean | null;
 }
 
 export interface ForecastDto {
@@ -191,6 +203,9 @@ export interface ScenarioDefinition {
     predictionTimeStep: number;
     controlInterval: number;
     forecastLead: number;
+    optimizer: CoolingOptimizerKind;
+    romModes: number;
+    romValidationThreshold: number;
   };
   playback: { stepsPerFrame: number; frameIntervalMs: number };
 }
@@ -380,4 +395,5 @@ export interface CoolingComparisonResult {
   optimizationHistory: { iteration: number; penalty: number; objective: number; energyTerm: number; violation: number; peakTemperature: number }[];
   optimizationMs: number;
   optimizationEvaluations: number;
+  optimizationAdjointSolves: number;
 }

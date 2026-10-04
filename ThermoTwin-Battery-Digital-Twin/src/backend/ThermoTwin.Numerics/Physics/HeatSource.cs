@@ -83,8 +83,10 @@ public sealed class HeatSourceModel
     public LoadProfile Load { get; }
 
     /// <summary>Time-independent spatial shape q(x, y) at full load (s = 1).</summary>
-    public double[] SpatialField(Grid2D grid) =>
-        grid.CreateField((x, y) => UniformJouleHeating + Hotspots.Sum(h => h.Evaluate(x, y)));
+    public double[] SpatialField(Grid2D grid) => grid.CreateField(ShapeAt);
+
+    /// <summary>Point value of the spatial shape at full load [W/m³] (used for nodal FEM interpolation).</summary>
+    public double ShapeAt(double x, double y) => UniformJouleHeating + Hotspots.Sum(h => h.Evaluate(x, y));
 
     public void Evaluate(Grid2D grid, double t, Span<double> destination, double[]? spatial = null)
     {

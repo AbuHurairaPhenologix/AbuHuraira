@@ -1,0 +1,6 @@
+model,modes,runtime_ms,speedup,objective,objective_gap,energy_J,fom_peak_C,feasible,screened_cells,correction_rounds,constraint_shift_K,repaired,fell_back,rom_solves,fom_solves,validation_error_K
+"Full-order FVM (adjoint)",800,6213.4,1.00,7.867950E-003,0.000E+000,2022.25,44.0007,True,800,0,0.0000,False,False,0,285,0.0000
+"POD ROM r = 20",20,326.4,19.03,7.869749E-003,2.287E-004,2023.05,44.0004,True,302,0,0.0000,False,False,244,1,0.0004
+"POD ROM r = 30",30,345.6,17.98,7.917854E-003,6.343E-003,2034.89,43.9825,True,300,0,0.0000,False,False,228,1,0.0182
+"POD ROM r = 40",40,497.9,12.48,7.903062E-003,4.463E-003,2031.34,43.9862,True,301,0,0.0000,False,False,249,1,0.0145
+"POD ROM r = 60",60,679.7,9.14,7.871324E-003,4.289E-004,2023.06,43.9994,True,302,0,0.0000,False,False,237,1,0.0013

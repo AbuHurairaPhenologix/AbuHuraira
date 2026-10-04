@@ -1,0 +1,609 @@
+{
+  "model": "Full-order FVM (40\u00D720)",
+  "stateDimension": 800,
+  "timeSteps": 180,
+  "controls": 18,
+  "mu": 10000,
+  "safeTemperature": 44,
+  "rows": [
+    {
+      "model": "Full-order FVM",
+      "vector": 0,
+      "epsilon": 0.1,
+      "relativeError": 0.013587935454579578,
+      "maxAbsoluteError": 0.0005555555555561975,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.1734643656377979
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 0,
+      "epsilon": 0.01,
+      "relativeError": 0.00013708344719390455,
+      "maxAbsoluteError": 5.555555558377917E-06,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17194071583800352
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 0,
+      "epsilon": 0.001,
+      "relativeError": 1.3709552113733202E-06,
+      "maxAbsoluteError": 5.5555574501875427E-08,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17192557108691106
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 0,
+      "epsilon": 0.0001,
+      "relativeError": 1.3710673258831429E-08,
+      "maxAbsoluteError": 5.560973070917186E-10,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.1719254196488618
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 0,
+      "epsilon": 1E-05,
+      "relativeError": 1.3101219887367986E-10,
+      "maxAbsoluteError": 6.0759747927408014E-12,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17192541813381215
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 0,
+      "epsilon": 1E-06,
+      "relativeError": 3.2672363916645844E-10,
+      "maxAbsoluteError": 3.174685514473197E-11,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.171925418131988
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 0,
+      "epsilon": 1E-07,
+      "relativeError": 3.920772289274786E-09,
+      "maxAbsoluteError": 3.895638533979451E-10,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17192541812159381
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 0,
+      "epsilon": 1E-08,
+      "relativeError": 2.9653427610007292E-08,
+      "maxAbsoluteError": 2.3859937081649463E-09,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17192541863399838
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 1,
+      "epsilon": 0.1,
+      "relativeError": 0.2392690359089582,
+      "maxAbsoluteError": 207.11637594545323,
+      "adjointNorm": 1237.4437832589572,
+      "finiteDifferenceNorm": 1201.283888688967
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 1,
+      "epsilon": 0.01,
+      "relativeError": 0.002070794905657245,
+      "maxAbsoluteError": 1.7761871154723394,
+      "adjointNorm": 1237.4437832589572,
+      "finiteDifferenceNorm": 1239.8210813283024
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 1,
+      "epsilon": 0.001,
+      "relativeError": 2.326121157064139E-05,
+      "maxAbsoluteError": 0.020523574995991112,
+      "adjointNorm": 1237.4437832589572,
+      "finiteDifferenceNorm": 1237.470443315132
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 1,
+      "epsilon": 0.0001,
+      "relativeError": 4.388412454799182E-07,
+      "maxAbsoluteError": 0.0003149484437017236,
+      "adjointNorm": 1237.4437832589572,
+      "finiteDifferenceNorm": 1237.4443018241761
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 1,
+      "epsilon": 1E-05,
+      "relativeError": 1.169487059155501E-08,
+      "maxAbsoluteError": 1.2348898280833964E-05,
+      "adjointNorm": 1237.4437832589572,
+      "finiteDifferenceNorm": 1237.443793860587
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 1,
+      "epsilon": 1E-06,
+      "relativeError": 1.5933574664295577E-08,
+      "maxAbsoluteError": 1.6020617749745725E-05,
+      "adjointNorm": 1237.4437832589572,
+      "finiteDifferenceNorm": 1237.443796140076
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 1,
+      "epsilon": 1E-07,
+      "relativeError": 1.1915694634249077E-07,
+      "maxAbsoluteError": 8.62814703168624E-05,
+      "adjointNorm": 1237.4437832589572,
+      "finiteDifferenceNorm": 1237.443796892711
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 1,
+      "epsilon": 1E-08,
+      "relativeError": 6.724017095940942E-07,
+      "maxAbsoluteError": 0.0004869571931749306,
+      "adjointNorm": 1237.4437832589572,
+      "finiteDifferenceNorm": 1237.4437294204731
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 2,
+      "epsilon": 0.1,
+      "relativeError": 0.021161942842037203,
+      "maxAbsoluteError": 0.0011111111111109032,
+      "adjointNorm": 0.12405263085455688,
+      "finiteDifferenceNorm": 0.1259420822083763
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 2,
+      "epsilon": 0.01,
+      "relativeError": 0.0001899807608799153,
+      "maxAbsoluteError": 5.555555558527103E-06,
+      "adjointNorm": 0.12405263085455688,
+      "finiteDifferenceNorm": 0.12406638405708634
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 2,
+      "epsilon": 0.001,
+      "relativeError": 1.9000160870445408E-06,
+      "maxAbsoluteError": 5.555556251146676E-08,
+      "adjointNorm": 0.12405263085455688,
+      "finiteDifferenceNorm": 0.12405276837194976
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 2,
+      "epsilon": 0.0001,
+      "relativeError": 1.8999117335551064E-08,
+      "maxAbsoluteError": 5.555878188068242E-10,
+      "adjointNorm": 0.12405263085455688,
+      "finiteDifferenceNorm": 0.12405263222960468
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 2,
+      "epsilon": 1E-05,
+      "relativeError": 1.8162913581937965E-10,
+      "maxAbsoluteError": 7.25319804217861E-12,
+      "adjointNorm": 0.12405263085455688,
+      "finiteDifferenceNorm": 0.12405263086731172
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 2,
+      "epsilon": 1E-06,
+      "relativeError": 2.6660362695369246E-10,
+      "maxAbsoluteError": 1.8050155987936467E-11,
+      "adjointNorm": 0.12405263085455688,
+      "finiteDifferenceNorm": 0.12405263084799469
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 2,
+      "epsilon": 1E-07,
+      "relativeError": 2.5422993274743714E-09,
+      "maxAbsoluteError": 1.873110676980927E-10,
+      "adjointNorm": 0.12405263085455688,
+      "finiteDifferenceNorm": 0.12405263081610646
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 2,
+      "epsilon": 1E-08,
+      "relativeError": 2.465999316749007E-08,
+      "maxAbsoluteError": 2.4660738616108513E-09,
+      "adjointNorm": 0.12405263085455688,
+      "finiteDifferenceNorm": 0.12405263106214537
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 3,
+      "epsilon": 0.1,
+      "relativeError": 0.3752181425424429,
+      "maxAbsoluteError": 40.88634405758001,
+      "adjointNorm": 106.42888225797184,
+      "finiteDifferenceNorm": 159.992880123644
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 3,
+      "epsilon": 0.01,
+      "relativeError": 0.005065740822748146,
+      "maxAbsoluteError": 0.3988011247892942,
+      "adjointNorm": 106.42888225797184,
+      "finiteDifferenceNorm": 106.92401827329451
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 3,
+      "epsilon": 0.001,
+      "relativeError": 1.1217503065309791E-05,
+      "maxAbsoluteError": 0.0010095910764036375,
+      "adjointNorm": 106.42888225797184,
+      "finiteDifferenceNorm": 106.42990660263851
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 3,
+      "epsilon": 0.0001,
+      "relativeError": 4.126066869066737E-08,
+      "maxAbsoluteError": 2.840056410491343E-06,
+      "adjointNorm": 106.42888225797184,
+      "finiteDifferenceNorm": 106.42888650617735
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 3,
+      "epsilon": 1E-05,
+      "relativeError": 1.327271085542201E-09,
+      "maxAbsoluteError": 9.090106800613285E-08,
+      "adjointNorm": 106.42888225797184,
+      "finiteDifferenceNorm": 106.42888228169738
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 3,
+      "epsilon": 1E-06,
+      "relativeError": 9.516677977189722E-09,
+      "maxAbsoluteError": 8.169915872713318E-07,
+      "adjointNorm": 106.42888225797184,
+      "finiteDifferenceNorm": 106.42888172510143
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 3,
+      "epsilon": 1E-07,
+      "relativeError": 1.7265027375507877E-07,
+      "maxAbsoluteError": 1.4518408029573493E-05,
+      "adjointNorm": 106.42888225797184,
+      "finiteDifferenceNorm": 106.42889003878498
+    },
+    {
+      "model": "Full-order FVM",
+      "vector": 3,
+      "epsilon": 1E-08,
+      "relativeError": 6.381735565218439E-07,
+      "maxAbsoluteError": 4.23003116907239E-05,
+      "adjointNorm": 106.42888225797184,
+      "finiteDifferenceNorm": 106.42888648751672
+    },
+    {
+      "model": "POD ROM (r = 40)",
+      "vector": 0,
+      "epsilon": 0.1,
+      "relativeError": 0.013587935454579578,
+      "maxAbsoluteError": 0.0005555555555561975,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.1734643656377979
+    },
+    {
+      "model": "POD ROM (r = 40)",
+      "vector": 0,
+      "epsilon": 0.01,
+      "relativeError": 0.00013708344719390455,
+      "maxAbsoluteError": 5.555555558377917E-06,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17194071583800352
+    },
+    {
+      "model": "POD ROM (r = 40)",
+      "vector": 0,
+      "epsilon": 0.001,
+      "relativeError": 1.3709552113733202E-06,
+      "maxAbsoluteError": 5.5555574501875427E-08,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17192557108691106
+    },
+    {
+      "model": "POD ROM (r = 40)",
+      "vector": 0,
+      "epsilon": 0.0001,
+      "relativeError": 1.3710673258831429E-08,
+      "maxAbsoluteError": 5.560973070917186E-10,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.1719254196488618
+    },
+    {
+      "model": "POD ROM (r = 40)",
+      "vector": 0,
+      "epsilon": 1E-05,
+      "relativeError": 1.3101219887367986E-10,
+      "maxAbsoluteError": 6.0759747927408014E-12,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17192541813381215
+    },
+    {
+      "model": "POD ROM (r = 40)",
+      "vector": 0,
+      "epsilon": 1E-06,
+      "relativeError": 3.2672363916645844E-10,
+      "maxAbsoluteError": 3.174685514473197E-11,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.171925418131988
+    },
+    {
+      "model": "POD ROM (r = 40)",
+      "vector": 0,
+      "epsilon": 1E-07,
+      "relativeError": 3.920772289274786E-09,
+      "maxAbsoluteError": 3.895638533979451E-10,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17192541812159381
+    },
+    {
+      "model": "POD ROM (r = 40)",
+      "vector": 0,
+      "epsilon": 1E-08,
+      "relativeError": 2.9653427610007292E-08,
+      "maxAbsoluteError": 2.3859937081649463E-09,
+      "adjointNorm": 0.17192541811895537,
+      "finiteDifferenceNorm": 0.17192541863399838
+    }
+  ],
+  "taylor": [
+    {
+      "epsilon": 0.1,
+      "zeroOrderRemainder": 0.0012540376649564783,
+      "firstOrderRemainder": 0.001070372088505802
+    },
+    {
+      "epsilon": 0.03162277660168379,
+      "zeroOrderRemainder": 0.00016486060446314899,
+      "firstOrderRemainder": 0.0001067804495279569
+    },
+    {
+      "epsilon": 0.01,
+      "zeroOrderRemainder": 2.903648315508156E-05,
+      "firstOrderRemainder": 1.066992551001394E-05
+    },
+    {
+      "epsilon": 0.0031622776601683794,
+      "zeroOrderRemainder": 6.8747512850381165E-06,
+      "firstOrderRemainder": 1.066735791518907E-06
+    },
+    {
+      "epsilon": 0.001,
+      "zeroOrderRemainder": 1.9433212241765085E-06,
+      "firstOrderRemainder": 1.0666545966974634E-07
+    },
+    {
+      "epsilon": 0.00031622776601683794,
+      "zeroOrderRemainder": 5.914678386231831E-07,
+      "firstOrderRemainder": 1.0666289271262156E-08
+    },
+    {
+      "epsilon": 0.0001,
+      "zeroOrderRemainder": 1.8473219716430567E-07,
+      "firstOrderRemainder": 1.066620713629457E-09
+    },
+    {
+      "epsilon": 3.1622776601683795E-05,
+      "zeroOrderRemainder": 5.8186816628835736E-08,
+      "firstOrderRemainder": 1.0666169364363506E-10
+    },
+    {
+      "epsilon": 1E-05,
+      "zeroOrderRemainder": 1.8377223881538285E-08,
+      "firstOrderRemainder": 1.0666236470663234E-11
+    }
+  ],
+  "components": [
+    {
+      "segment": 0,
+      "control": 0.534387,
+      "adjoint": 0.06378672372207003,
+      "finiteDifference": 0.06378672371548655
+    },
+    {
+      "segment": 1,
+      "control": 0.129594,
+      "adjoint": -0.02354536200819727,
+      "finiteDifference": -0.02354536200732671
+    },
+    {
+      "segment": 2,
+      "control": 0.383411,
+      "adjoint": 0.02994069113831427,
+      "finiteDifference": 0.029940691134711095
+    },
+    {
+      "segment": 3,
+      "control": 0.501227,
+      "adjoint": 0.057541031115911745,
+      "finiteDifference": 0.057541031127372744
+    },
+    {
+      "segment": 4,
+      "control": 0.227304,
+      "adjoint": -0.014226957236111414,
+      "finiteDifference": -0.014226957251173289
+    },
+    {
+      "segment": 5,
+      "control": 0.524333,
+      "adjoint": 0.06244134161614667,
+      "finiteDifference": 0.06244134162503023
+    },
+    {
+      "segment": 6,
+      "control": 0.405848,
+      "adjoint": 0.024734356285716574,
+      "finiteDifference": 0.024734356292299697
+    },
+    {
+      "segment": 7,
+      "control": 0.355309,
+      "adjoint": 0.02424715055132825,
+      "finiteDifference": 0.024247150558209807
+    },
+    {
+      "segment": 8,
+      "control": 0.22461,
+      "adjoint": 0.007188411906486603,
+      "finiteDifference": 0.00718841192126618
+    },
+    {
+      "segment": 9,
+      "control": 0.124407,
+      "adjoint": -0.017751487050009725,
+      "finiteDifference": -0.017751487051131942
+    },
+    {
+      "segment": 10,
+      "control": 0.53248,
+      "adjoint": 0.0721026376758804,
+      "finiteDifference": 0.07210263770762726
+    },
+    {
+      "segment": 11,
+      "control": 0.31938,
+      "adjoint": 0.011696443782435447,
+      "finiteDifference": 0.01169644375798029
+    },
+    {
+      "segment": 12,
+      "control": 0.238882,
+      "adjoint": 0.003945444339261312,
+      "finiteDifference": 0.003945444339292781
+    },
+    {
+      "segment": 13,
+      "control": 0.297519,
+      "adjoint": 0.007412462282331328,
+      "finiteDifference": 0.007412462275924181
+    },
+    {
+      "segment": 14,
+      "control": 0.539669,
+      "adjoint": 0.06816402708695142,
+      "finiteDifference": 0.0681640270686068
+    },
+    {
+      "segment": 15,
+      "control": 0.291228,
+      "adjoint": -0.004118380306600245,
+      "finiteDifference": -0.0041183803034527955
+    },
+    {
+      "segment": 16,
+      "control": 0.499139,
+      "adjoint": 0.04789957960606829,
+      "finiteDifference": 0.047899579594390396
+    },
+    {
+      "segment": 17,
+      "control": 0.54764,
+      "adjoint": 0.05192496116314346,
+      "finiteDifference": 0.051924961178007045
+    }
+  ],
+  "cost": [
+    {
+      "controls": 3,
+      "segmentDuration": 600,
+      "adjointMs": 31.67,
+      "forwardDifferenceMs": 73.1,
+      "centralDifferenceMs": 102.8,
+      "adjointSolves": 2,
+      "forwardDifferenceSolves": 4,
+      "centralDifferenceSolves": 6,
+      "relativeDifference": 3.0682294759292395E-10
+    },
+    {
+      "controls": 6,
+      "segmentDuration": 300,
+      "adjointMs": 30.06,
+      "forwardDifferenceMs": 114.3,
+      "centralDifferenceMs": 205,
+      "adjointSolves": 2,
+      "forwardDifferenceSolves": 7,
+      "centralDifferenceSolves": 12,
+      "relativeDifference": 2.3204545417968794E-10
+    },
+    {
+      "controls": 9,
+      "segmentDuration": 200,
+      "adjointMs": 33.37,
+      "forwardDifferenceMs": 170.7,
+      "centralDifferenceMs": 301,
+      "adjointSolves": 2,
+      "forwardDifferenceSolves": 10,
+      "centralDifferenceSolves": 18,
+      "relativeDifference": 6.507012774442223E-09
+    },
+    {
+      "controls": 18,
+      "segmentDuration": 100,
+      "adjointMs": 31.14,
+      "forwardDifferenceMs": 314.3,
+      "centralDifferenceMs": 589.4,
+      "adjointSolves": 2,
+      "forwardDifferenceSolves": 19,
+      "centralDifferenceSolves": 36,
+      "relativeDifference": 7.154348606509256E-09
+    },
+    {
+      "controls": 36,
+      "segmentDuration": 50,
+      "adjointMs": 30.1,
+      "forwardDifferenceMs": 602.1,
+      "centralDifferenceMs": 1192.5,
+      "adjointSolves": 2,
+      "forwardDifferenceSolves": 37,
+      "centralDifferenceSolves": 72,
+      "relativeDifference": 9.254313552062761E-09
+    },
+    {
+      "controls": 60,
+      "segmentDuration": 30,
+      "adjointMs": 31.62,
+      "forwardDifferenceMs": 1015.4,
+      "centralDifferenceMs": 2041.6,
+      "adjointSolves": 2,
+      "forwardDifferenceSolves": 61,
+      "centralDifferenceSolves": 120,
+      "relativeDifference": 1.173683395079577E-08
+    },
+    {
+      "controls": 90,
+      "segmentDuration": 20,
+      "adjointMs": 32.5,
+      "forwardDifferenceMs": 1568.5,
+      "centralDifferenceMs": 3055.9,
+      "adjointSolves": 2,
+      "forwardDifferenceSolves": 91,
+      "centralDifferenceSolves": 180,
+      "relativeDifference": 1.5987373416970874E-08
+    }
+  ],
+  "bestRelativeError": 1.169487059155501E-08,
+  "bestEpsilon": 1E-05,
+  "romBestRelativeError": 1.3101219887367986E-10
+}
