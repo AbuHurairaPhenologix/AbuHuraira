@@ -1,0 +1,284 @@
+// ThermoTwin.NET — dark scientific dashboard theme.
+:root {
+  color-scheme: dark;
+  --page: #0d0d0d;
+  --surface-1: #151514;
+  --surface-2: #1a1a19;
+  --surface-3: #242422;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: #383835;
+  --ink-1: #ffffff;
+  --ink-2: #c3c2b7;
+  --ink-3: #898781;
+  --blue: #3987e5;
+  --orange: #d95926;
+  --aqua: #199e70;
+  --good: #0ca30c;
+  --warning: #fab219;
+  --serious: #ec835a;
+  --critical: #d03b3b;
+  --radius: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  background: var(--page);
+  color: var(--ink-2);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--blue);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--ink-1);
+}
+
+.num,
+td,
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+// Page layout helpers
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 20px 28px;
+  max-width: 1680px;
+}
+
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+
+  h1 {
+    margin: 0;
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: var(--ink-3);
+    max-width: 900px;
+    line-height: 1.45;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: 14px;
+}
+
+.g-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.g-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.g-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.g-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+.span-3 {
+  grid-column: span 3;
+}
+
+@media (max-width: 1200px) {
+  .g-6 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .g-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .g-3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .g-2,
+  .g-3,
+  .g-4,
+  .g-6 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .span-2,
+  .span-3 {
+    grid-column: auto;
+  }
+
+  .page {
+    padding: 12px 16px 24px;
+  }
+}
+
+// Tables
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+
+  th {
+    text-align: right;
+    font-weight: 600;
+    color: var(--ink-3);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--line-strong);
+    white-space: nowrap;
+  }
+
+  td {
+    text-align: right;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink-2);
+    white-space: nowrap;
+  }
+
+  th:first-child,
+  td:first-child {
+    text-align: left;
+  }
+
+  td.strong {
+    color: var(--ink-1);
+    font-weight: 600;
+  }
+
+  tr.highlight td {
+    background: rgba(57, 135, 229, 0.08);
+    color: var(--ink-1);
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+// Pills & buttons
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-2);
+  background: var(--surface-2);
+  white-space: nowrap;
+}
+
+.pill.ok {
+  color: var(--good);
+  border-color: rgba(12, 163, 12, 0.45);
+}
+
+.pill.bad {
+  color: #ff6b6b;
+  border-color: rgba(208, 59, 59, 0.5);
+}
+
+.pill.info {
+  color: var(--blue);
+  border-color: rgba(57, 135, 229, 0.45);
+}
+
+button.btn {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface-3);
+  color: var(--ink-1);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--ink-3);
+  }
+
+  &.primary {
+    background: var(--blue);
+    border-color: var(--blue);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.muted {
+  color: var(--ink-3);
+}
+
+.legend-note {
+  font-size: 11px;
+  color: var(--ink-3);
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+
+  .sw {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+    vertical-align: -1px;
+  }
+}
+
+.math {
+  font-family: 'Cambria Math', 'STIX Two Math', 'Times New Roman', serif;
+  font-size: 14px;
+  color: var(--ink-1);
+}
+
+.formula {
+  font-family: 'Cambria Math', 'STIX Two Math', 'Times New Roman', serif;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--ink-1);
+  font-size: 14px;
+}

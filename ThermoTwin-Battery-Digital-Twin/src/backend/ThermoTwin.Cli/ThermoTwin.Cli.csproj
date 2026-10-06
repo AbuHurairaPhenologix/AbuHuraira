@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ThermoTwin.Cli</RootNamespace>
+    <AssemblyName>thermotwin</AssemblyName>
+    <Description>Command-line runner that executes every experiment and exports JSON/CSV/Markdown results.</Description>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ThermoTwin.Application\ThermoTwin.Application.csproj" />
+  </ItemGroup>
+</Project>

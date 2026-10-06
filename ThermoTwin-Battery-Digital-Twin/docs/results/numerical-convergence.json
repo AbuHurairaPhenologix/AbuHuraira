@@ -1,0 +1,533 @@
+{
+  "spatial": [
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 20,
+      "ny": 10,
+      "dx": 0.01,
+      "timeStep": 2.5,
+      "steps": 40,
+      "rmse": 0.019807561946588968,
+      "maxError": 0.03900677927682494,
+      "runtimeMs": 3.6395,
+      "observedOrderRmse": null,
+      "observedOrderMax": null
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 0.625,
+      "steps": 160,
+      "rmse": 0.004925150624945439,
+      "maxError": 0.009812365243696775,
+      "runtimeMs": 6.6306,
+      "observedOrderRmse": 2.00781156212369,
+      "observedOrderMax": 1.991052041258554
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 80,
+      "ny": 40,
+      "dx": 0.0025,
+      "timeStep": 0.15625,
+      "steps": 640,
+      "rmse": 0.0012296309428491516,
+      "maxError": 0.0024568922032486284,
+      "runtimeMs": 47.9861,
+      "observedOrderRmse": 2.0019424718475984,
+      "observedOrderMax": 1.9977663755542439
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 160,
+      "ny": 80,
+      "dx": 0.00125,
+      "timeStep": 0.0390625,
+      "steps": 2560,
+      "rmse": 0.0003073044157921129,
+      "maxError": 0.0006144607469593666,
+      "runtimeMs": 406.9554,
+      "observedOrderRmse": 2.000484972153228,
+      "observedOrderMax": 1.9994418042172974
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 20,
+      "ny": 10,
+      "dx": 0.01,
+      "timeStep": 2.5,
+      "steps": 40,
+      "rmse": 0.07032389486305825,
+      "maxError": 0.1384879498146674,
+      "runtimeMs": 8.8641,
+      "observedOrderRmse": null,
+      "observedOrderMax": null
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 0.625,
+      "steps": 160,
+      "rmse": 0.017725562130154505,
+      "maxError": 0.03531459299745876,
+      "runtimeMs": 8.4966,
+      "observedOrderRmse": 1.9881835954989595,
+      "observedOrderMax": 1.9714240746321552
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 80,
+      "ny": 40,
+      "dx": 0.0025,
+      "timeStep": 0.15625,
+      "steps": 640,
+      "rmse": 0.004440537801513687,
+      "maxError": 0.008872518024610088,
+      "runtimeMs": 210.6946,
+      "observedOrderRmse": 1.9970250606706252,
+      "observedOrderMax": 1.9928489642100817
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 160,
+      "ny": 80,
+      "dx": 0.00125,
+      "timeStep": 0.0390625,
+      "steps": 2560,
+      "rmse": 0.0011107078855720164,
+      "maxError": 0.0022208805463890258,
+      "runtimeMs": 13720.462,
+      "observedOrderRmse": 1.9992549744616595,
+      "observedOrderMax": 1.9982118028264684
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 20,
+      "ny": 10,
+      "dx": 0.01,
+      "timeStep": 2.5,
+      "steps": 40,
+      "rmse": 0.025539747770019126,
+      "maxError": 0.050295099757200035,
+      "runtimeMs": 1.2165,
+      "observedOrderRmse": null,
+      "observedOrderMax": null
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 0.625,
+      "steps": 160,
+      "rmse": 0.006417897893401094,
+      "maxError": 0.012786361884458586,
+      "runtimeMs": 20.0765,
+      "observedOrderRmse": 1.9925715349652366,
+      "observedOrderMax": 1.975812014117615
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 80,
+      "ny": 40,
+      "dx": 0.0025,
+      "timeStep": 0.15625,
+      "steps": 640,
+      "rmse": 0.0016065606888035426,
+      "maxError": 0.003210025294599461,
+      "runtimeMs": 561.7828,
+      "observedOrderRmse": 1.9981253564908794,
+      "observedOrderMax": 1.99394926047168
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 160,
+      "ny": 80,
+      "dx": 0.00125,
+      "timeStep": 0.0390625,
+      "steps": 2560,
+      "rmse": 0.0004017709832438064,
+      "maxError": 0.000803348357223399,
+      "runtimeMs": 15309.9452,
+      "observedOrderRmse": 1.9995302020807055,
+      "observedOrderMax": 1.9984870389748182
+    }
+  ],
+  "temporal": [
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 0.6410256410256411,
+      "steps": 312,
+      "rmse": 0.00868296494846045,
+      "maxError": 0.017299049300323333,
+      "runtimeMs": 7.2309,
+      "observedOrderRmse": null,
+      "observedOrderMax": null
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 0.32,
+      "steps": 625,
+      "rmse": 0.0043321519847436115,
+      "maxError": 0.008630935539347462,
+      "runtimeMs": 14.3009,
+      "observedOrderRmse": 1.000791911968404,
+      "observedOrderMax": 1.00079191196836
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 0.16,
+      "steps": 1250,
+      "rmse": 0.002165481942403529,
+      "maxError": 0.004314284245413802,
+      "runtimeMs": 28.6484,
+      "observedOrderRmse": 1.0003957157962802,
+      "observedOrderMax": 1.0003957157953765
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 0.08,
+      "steps": 2500,
+      "rmse": 0.001082592468402179,
+      "maxError": 0.00215684626095225,
+      "runtimeMs": 61.583,
+      "observedOrderRmse": 1.0001978856918177,
+      "observedOrderMax": 1.0001978856913523
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 0.04,
+      "steps": 5000,
+      "rmse": 0.0005412591097336204,
+      "maxError": 0.001078349167485726,
+      "runtimeMs": 115.3142,
+      "observedOrderRmse": 1.0000989497404167,
+      "observedOrderMax": 1.00009894974968
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 20,
+      "steps": 10,
+      "rmse": 0.26142968665177413,
+      "maxError": 0.520845709363325,
+      "runtimeMs": 2.1445,
+      "observedOrderRmse": null,
+      "observedOrderMax": null
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 10,
+      "steps": 20,
+      "rmse": 0.13299506472441966,
+      "maxError": 0.264965734057828,
+      "runtimeMs": 5.1733,
+      "observedOrderRmse": 0.9750502655267441,
+      "observedOrderMax": 0.9750502655270854
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 5,
+      "steps": 40,
+      "rmse": 0.06707372573745991,
+      "maxError": 0.13363081564607882,
+      "runtimeMs": 7.0014,
+      "observedOrderRmse": 0.9875530635381048,
+      "observedOrderMax": 0.9875530635374759
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 2.5,
+      "steps": 80,
+      "rmse": 0.033681476979923165,
+      "maxError": 0.0671035221541807,
+      "runtimeMs": 10.2174,
+      "observedOrderRmse": 0.9937923375250467,
+      "observedOrderMax": 0.9937923375265465
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 1.25,
+      "steps": 160,
+      "rmse": 0.016876947499188236,
+      "maxError": 0.03362390019546879,
+      "runtimeMs": 19.0907,
+      "observedOrderRmse": 0.9969014138072982,
+      "observedOrderMax": 0.9969014138045035
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 20,
+      "steps": 10,
+      "rmse": 0.008910715982880298,
+      "maxError": 0.017752797115296204,
+      "runtimeMs": 1.9618,
+      "observedOrderRmse": null,
+      "observedOrderMax": null
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 10,
+      "steps": 20,
+      "rmse": 0.0022232650515980924,
+      "maxError": 0.00442940538900416,
+      "runtimeMs": 3.2739,
+      "observedOrderRmse": 2.0028614052728417,
+      "observedOrderMax": 2.0028614052762777
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 5,
+      "steps": 40,
+      "rmse": 0.0005555413760461267,
+      "maxError": 0.0011068036909094303,
+      "runtimeMs": 5.5051,
+      "observedOrderRmse": 2.0007136818867135,
+      "observedOrderMax": 2.0007136818250277
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 2.5,
+      "steps": 80,
+      "rmse": 0.00013886817910196145,
+      "maxError": 0.00027666672512793866,
+      "runtimeMs": 9.9245,
+      "observedOrderRmse": 2.0001783144254532,
+      "observedOrderMax": 2.000178314389524
+    },
+    {
+      "scheme": "CrankNicolson",
+      "nx": 40,
+      "ny": 20,
+      "dx": 0.005,
+      "timeStep": 1.25,
+      "steps": 160,
+      "rmse": 3.471597244551223E-05,
+      "maxError": 6.916454483985035E-05,
+      "runtimeMs": 19.0992,
+      "observedOrderRmse": 2.000044562232888,
+      "observedOrderMax": 2.000044563104933
+    }
+  ],
+  "stabilityProbes": [
+    {
+      "scheme": "ExplicitEuler",
+      "timeStepRatio": 0.5,
+      "timeStep": 0.3909437941293185,
+      "steps": 400,
+      "finalAmplitude": 0.0023999750225708076,
+      "diverged": false
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "timeStepRatio": 0.9,
+      "timeStep": 0.7036988294327733,
+      "steps": 400,
+      "finalAmplitude": 0.00038355224201431517,
+      "diverged": false
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "timeStepRatio": 0.99,
+      "timeStep": 0.7740687123760507,
+      "steps": 400,
+      "finalAmplitude": 0.0002637908905152526,
+      "diverged": false
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "timeStepRatio": 1.01,
+      "timeStep": 0.7897064641412234,
+      "steps": 400,
+      "finalAmplitude": 74.1161582367484,
+      "diverged": true
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "timeStepRatio": 1.1,
+      "timeStep": 0.8600763470845008,
+      "steps": 400,
+      "finalAmplitude": 1.2866192706084028E+30,
+      "diverged": true
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "timeStepRatio": 1.5,
+      "timeStep": 1.1728313823879555,
+      "steps": 400,
+      "finalAmplitude": 7.412422193697523E+118,
+      "diverged": true
+    }
+  ],
+  "stabilityReports": [
+    {
+      "scheme": "ExplicitEuler",
+      "timeStep": 5,
+      "fourierNumber": 3.1999999999999997,
+      "spectralRadiusBound": 2.5648,
+      "spectralRadiusEstimate": 2.5536827223346044,
+      "explicitCriticalTimeStep": 0.7831826493197159,
+      "classicalExplicitLimit": 0.78125,
+      "amplificationFactor": 11.768413611673022,
+      "stiffModeAmplification": -11.768413611673022,
+      "isStable": false
+    },
+    {
+      "scheme": "ExplicitEuler",
+      "timeStep": 0.5,
+      "fourierNumber": 0.32,
+      "spectralRadiusBound": 2.5648,
+      "spectralRadiusEstimate": 2.5536827223346044,
+      "explicitCriticalTimeStep": 0.7831826493197159,
+      "classicalExplicitLimit": 0.78125,
+      "amplificationFactor": 1,
+      "stiffModeAmplification": -0.2768413611673022,
+      "isStable": true
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "timeStep": 5,
+      "fourierNumber": 3.1999999999999997,
+      "spectralRadiusBound": 2.5648,
+      "spectralRadiusEstimate": 2.5536827223346044,
+      "explicitCriticalTimeStep": 0.7831826493197159,
+      "classicalExplicitLimit": 0.78125,
+      "amplificationFactor": 1,
+      "stiffModeAmplification": 0.07263000867087464,
+      "isStable": true
+    },
+    {
+      "scheme": "CrankNicolson",
+      "timeStep": 5,
+      "fourierNumber": 3.1999999999999997,
+      "spectralRadiusBound": 2.5648,
+      "spectralRadiusEstimate": 2.5536827223346044,
+      "explicitCriticalTimeStep": 0.7831826493197159,
+      "classicalExplicitLimit": 0.78125,
+      "amplificationFactor": 1,
+      "stiffModeAmplification": -0.7291516810689551,
+      "isStable": true
+    }
+  ],
+  "energyConservation": [
+    {
+      "scheme": "ExplicitEuler",
+      "injectedEnergy": 9820.700558569248,
+      "storedEnergyChange": 9820.700558569255,
+      "relativeImbalance": 7.408796929293037E-16
+    },
+    {
+      "scheme": "ImplicitEuler",
+      "injectedEnergy": 9820.70055856925,
+      "storedEnergyChange": 9820.700558568713,
+      "relativeImbalance": 5.463987735353614E-14
+    },
+    {
+      "scheme": "CrankNicolson",
+      "injectedEnergy": 9820.70055856925,
+      "storedEnergyChange": 9820.700558570026,
+      "relativeImbalance": 7.908890722020316E-14
+    }
+  ],
+  "performance": [
+    {
+      "label": "Crank\u2013Nicolson step 40\u00D720",
+      "nx": 40,
+      "ny": 20,
+      "scheme": "CrankNicolson",
+      "steps": 200,
+      "totalMs": 23.8199,
+      "msPerStep": 0.1190995
+    },
+    {
+      "label": "Crank\u2013Nicolson step 80\u00D740",
+      "nx": 80,
+      "ny": 40,
+      "scheme": "CrankNicolson",
+      "steps": 200,
+      "totalMs": 173.226,
+      "msPerStep": 0.86613
+    },
+    {
+      "label": "Crank\u2013Nicolson step 160\u00D780",
+      "nx": 160,
+      "ny": 80,
+      "scheme": "CrankNicolson",
+      "steps": 200,
+      "totalMs": 1161.9477,
+      "msPerStep": 5.8097385
+    },
+    {
+      "label": "Plant simulation 1800 s (80\u00D740)",
+      "nx": 80,
+      "ny": 40,
+      "scheme": "CrankNicolson",
+      "steps": 360,
+      "totalMs": 380.3568000000001,
+      "msPerStep": 1.056546666666667
+    },
+    {
+      "label": "Inverse assimilation, 91 basis responses",
+      "nx": 40,
+      "ny": 20,
+      "scheme": "CrankNicolson",
+      "steps": 360,
+      "totalMs": 1526.3747000000014,
+      "msPerStep": 4.239929722222226
+    },
+    {
+      "label": "Tikhonov solve incl. GCV \u03BB search",
+      "nx": 91,
+      "ny": 1,
+      "scheme": "Cholesky",
+      "steps": 1,
+      "totalMs": 314.7752,
+      "msPerStep": 314.7753
+    }
+  ]
+}

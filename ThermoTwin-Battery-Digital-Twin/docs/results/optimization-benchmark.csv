@@ -1,0 +1,5 @@
+method,gradient,objective,energy_J,model_peak_C,model_violation_K,plant_peak_C,plant_violation_K,feasible,iterations,forward_solves,adjoint_solves,full_order_solve_equivalents,runtime_ms,projected_gradient_norm,gradient_norm,active_lower,active_upper,inactive
+"Adjoint gradient · full order","Discrete adjoint",7.867950E-003,2022.25,44.0007,0.0007,44.9350,0.0000,True,66,215,70,285,5552.1,4.847E-005,4.847E-005,0,0,18
+"Finite-difference gradient · full order","Forward differences, ε = 10⁻⁴",7.886415E-003,2029.14,44.0002,0.0002,44.9246,0.0000,True,57,1387,0,1387,23774.3,1.479E-002,1.479E-002,0,0,18
+"Adjoint gradient · POD ROM (r = 40), FOM-certified","Discrete adjoint (reduced)",7.903062E-003,2031.34,43.9862,0.0000,44.9185,0.0000,True,60,185,64,1,523.1,1.692E-002,1.692E-002,0,0,18
+"Original optimiser (max-penalty, parallel FD on 12 threads)","Forward differences, h = 10⁻³",8.927788E-003,2369.01,43.9956,0.0000,44.9170,0.0000,True,31,955,0,955,12091.1,1.356E-002,1.356E-002,0,0,18

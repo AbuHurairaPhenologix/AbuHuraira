@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>ThermoTwin.Numerics</RootNamespace>
+    <Description>Dependency-free scientific computing core: finite-difference heat equation solvers, inverse heat-source estimation, prediction and cooling optimisation.</Description>
+  </PropertyGroup>
+</Project>
