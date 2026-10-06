@@ -1,0 +1,138 @@
+# Machine Learning-Based Anomaly Detection for Distributed Web Application Logs — local deployment topology
+# (report Figure 4.3). Copy .env.example to .env (or run: python scripts/setup/generate_env.py) before `docker compose up`.
+#
+# Only the dashboard (and, for development, the backend's Swagger UI) are published on the host, bound to 127.0.0.1.
+# The ML scoring service, PostgreSQL and OpenSearch stay on the internal network behind the backend.
+
+name: anomaly-detection
+
+x-ml-env: &ml-env
+  ML_PROJECT_ROOT: /app
+  ML_SERVICE_TOKEN_SIGNING_KEY: ${ML_SERVICE_TOKEN_SIGNING_KEY:?set ML_SERVICE_TOKEN_SIGNING_KEY in .env}
+  ML_SERVICE_TOKEN_ISSUER: anomaly-backend
+  ML_SERVICE_TOKEN_AUDIENCE: ml-scoring
+
+x-ml-volumes: &ml-volumes
+  - ./artifacts:/app/artifacts
+  - ./data:/app/data
+  - ./config:/app/config:ro
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-anomaly_detection}
+      POSTGRES_USER: ${POSTGRES_USER:-anomaly}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    networks: [internal]
+
+  opensearch:
+    image: opensearchproject/opensearch:2.19.2
+    environment:
+      discovery.type: single-node
+      bootstrap.memory_lock: "false"
+      OPENSEARCH_JAVA_OPTS: "-Xms512m -Xmx512m"
+      # Development only: the security plugin is disabled and the node is reachable only on the internal network
+      # (and loopback). Production must enable TLS + authentication (see docs/architecture.md).
+      DISABLE_SECURITY_PLUGIN: "true"
+      DISABLE_INSTALL_DEMO_CONFIG: "true"
+    ulimits:
+      nofile: { soft: 65536, hard: 65536 }
+    volumes:
+      - osdata:/usr/share/opensearch/data
+    ports:
+      - "127.0.0.1:${OPENSEARCH_HOST_PORT:-9200}:9200"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    networks: [internal]
+
+  opensearch-dashboards:
+    profiles: [tools]
+    image: opensearchproject/opensearch-dashboards:2.19.2
+    environment:
+      OPENSEARCH_HOSTS: '["http://opensearch:9200"]'
+      DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
+    ports:
+      - "127.0.0.1:5601:5601"
+    depends_on:
+      opensearch: { condition: service_healthy }
+    networks: [internal]
+
+  # One-shot: generates the synthetic benchmark and trains/registers models only if the registry is empty.
+  ml-trainer:
+    build: ./src/ml-service
+    image: anomaly-detection/ml-service:local
+    command: ["python", "-m", "app.training.train", "--algorithm", "all", "--if-missing"]
+    environment: *ml-env
+    volumes: *ml-volumes
+    restart: "no"
+    networks: [internal]
+
+  ml-service:
+    image: anomaly-detection/ml-service:local
+    environment: *ml-env
+    volumes: *ml-volumes
+    expose: ["8000"]
+    depends_on:
+      ml-trainer: { condition: service_completed_successfully }
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health/ready', timeout=4).status == 200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    networks: [internal]
+
+  backend:
+    build: ./src/backend
+    image: anomaly-detection/backend:local
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT:-Development}
+      ConnectionStrings__Postgres: "Host=postgres;Port=5432;Database=${POSTGRES_DB:-anomaly_detection};Username=${POSTGRES_USER:-anomaly};Password=${POSTGRES_PASSWORD}"
+      Database__ApplyMigrationsOnStartup: "true"
+      MlService__BaseUrl: http://ml-service:8000
+      MlService__ServiceTokenSigningKey: ${ML_SERVICE_TOKEN_SIGNING_KEY}
+      OpenSearch__Url: http://opensearch:9200
+      Auth__Mode: Development
+      Auth__SigningKey: ${AUTH_SIGNING_KEY:?set AUTH_SIGNING_KEY in .env}
+      Auth__DemoEngineerPassword: ${DEMO_ENGINEER_PASSWORD:?set DEMO_ENGINEER_PASSWORD in .env}
+      Auth__DemoAdminPassword: ${DEMO_ADMIN_PASSWORD:?set DEMO_ADMIN_PASSWORD in .env}
+      Ingestion__ApiKey: ${INGESTION_API_KEY:?set INGESTION_API_KEY in .env}
+      Models__Bootstrap__Enabled: ${MODEL_BOOTSTRAP_ENABLED:-true}
+      Pipeline__WindowSizeMinutes: ${WINDOW_SIZE_MINUTES:-5}
+      Demo__EnableScenarios: ${DEMO_SCENARIOS_ENABLED:-true}
+    ports:
+      - "127.0.0.1:${BACKEND_HOST_PORT:-5080}:8080"
+    depends_on:
+      postgres: { condition: service_healthy }
+      opensearch: { condition: service_healthy }
+      ml-service: { condition: service_healthy }
+    networks: [internal]
+
+  frontend:
+    build: ./src/frontend
+    image: anomaly-detection/frontend:local
+    ports:
+      - "127.0.0.1:${FRONTEND_HOST_PORT:-8081}:80"
+    depends_on:
+      backend: { condition: service_healthy }
+    networks: [internal]
+
+volumes:
+  pgdata:
+  osdata:
+
+networks:
+  internal:
+    name: anomaly-detection-internal

@@ -1,0 +1,5 @@
+{
+  "/api": { "target": "http://localhost:5080", "secure": false, "changeOrigin": true },
+  "/demo": { "target": "http://localhost:5080", "secure": false, "changeOrigin": true },
+  "/swagger": { "target": "http://localhost:5080", "secure": false, "changeOrigin": true }
+}

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "ops-v1",
+  "description": "Window-level operational features (report Table 3.3). Order is significant: it is the model input column order.",
+  "partitioning": ["service", "environment", "window"],
+  "defaultWindowMinutes": 5,
+  "supportedWindowMinutes": [1, 5, 15],
+  "features": [
+    {"index": 0, "name": "request_count", "type": "integer", "unit": "requests/window", "definition": "count of http_request events"},
+    {"index": 1, "name": "error_rate", "type": "ratio", "unit": "0..1", "definition": "request events with error_flag / request_count"},
+    {"index": 2, "name": "avg_duration_ms", "type": "real", "unit": "ms", "definition": "mean duration of request events"},
+    {"index": 3, "name": "p95_duration_ms", "type": "real", "unit": "ms", "definition": "95th percentile (linear interpolation) of request durations"},
+    {"index": 4, "name": "auth_failure_rate", "type": "ratio", "unit": "0..1", "definition": "request events with authentication_result=failure (incl. 401/403) / request_count"},
+    {"index": 5, "name": "dependency_failure_count", "type": "integer", "unit": "failures/window", "definition": "dependency_call events with error_flag"},
+    {"index": 6, "name": "retry_count", "type": "integer", "unit": "retries/window", "definition": "sum of retry_count over all events"},
+    {"index": 7, "name": "endpoint_entropy", "type": "real", "unit": "bits", "definition": "Shannon entropy (log2) of endpoint-group distribution of request events"}
+  ]
+}

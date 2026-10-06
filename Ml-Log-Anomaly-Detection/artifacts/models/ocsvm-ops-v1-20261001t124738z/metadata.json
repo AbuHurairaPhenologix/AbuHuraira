@@ -1,0 +1,108 @@
+{
+  "modelId": "8c683b57-71d2-4c7f-85e4-32f08715a917",
+  "modelVersion": "ocsvm-ops-v1-20261001t124738z",
+  "algorithm": "ocsvm",
+  "displayName": "One-Class SVM",
+  "featureSchemaVersion": "ops-v1",
+  "featureNames": [
+    "request_count",
+    "error_rate",
+    "avg_duration_ms",
+    "p95_duration_ms",
+    "auth_failure_rate",
+    "dependency_failure_count",
+    "retry_count",
+    "endpoint_entropy"
+  ],
+  "trainingPeriodStartUtc": "2022-01-03T00:00:00Z",
+  "trainingPeriodEndUtc": "2022-01-17T16:05:00Z",
+  "trainingWindows": 6000,
+  "randomSeed": 20220215,
+  "libraryVersions": {
+    "python": "3.12.3",
+    "scikit-learn": "1.9.1",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "scipy": "1.18.1",
+    "joblib": "1.6.0",
+    "matplotlib": "3.11.2",
+    "fastapi": "0.142.2",
+    "pydantic": "2.13.5"
+  },
+  "parameters": {
+    "kernel": "rbf",
+    "nu": 0.04,
+    "gamma": "scale",
+    "scaling": "standard",
+    "trainingSubset": 6000
+  },
+  "validationThreshold": 2.915572299760499,
+  "thresholdObjective": "max_f1",
+  "thresholdQuantile": 0.9919874476987448,
+  "productionEligible": true,
+  "validationMetrics": {
+    "quantile": 0.9919874476987448,
+    "threshold": 2.915572299760499,
+    "precision": 0.7903225806451613,
+    "recall": 0.5444444444444444,
+    "f1": 0.644736842105263,
+    "fpr": 0.008125,
+    "tp": 245,
+    "fp": 65,
+    "tn": 7935,
+    "fn": 205,
+    "alerts_per_1000_windows": 36.68639053254437,
+    "alerts_per_service_day": 10.56568047337278,
+    "rocAuc": 0.8227972222222222,
+    "prAuc": 0.6357618080106092,
+    "libraryDefaultDecision": {
+      "tp": 288,
+      "fp": 407,
+      "tn": 7593,
+      "fn": 162
+    }
+  },
+  "baseline": {
+    "request_count": {
+      "mean": 139.8685625,
+      "std": 11.780154357375531
+    },
+    "error_rate": {
+      "mean": 0.019998959437499998,
+      "std": 0.01398426460749428
+    },
+    "avg_duration_ms": {
+      "mean": 249.70690362499997,
+      "std": 62.93295161063747
+    },
+    "p95_duration_ms": {
+      "mean": 648.6346434375,
+      "std": 176.11582357496528
+    },
+    "auth_failure_rate": {
+      "mean": 0.0150318601875,
+      "std": 0.012223884404834863
+    },
+    "dependency_failure_count": {
+      "mean": 0.1515625,
+      "std": 0.41453746343816744
+    },
+    "retry_count": {
+      "mean": 0.1014375,
+      "std": 0.33376328976349395
+    },
+    "endpoint_entropy": {
+      "mean": 2.3011644729375,
+      "std": 0.11988741211964672
+    }
+  },
+  "createdAtUtc": "2026-10-01T12:47:45Z",
+  "trainingRunId": "20261001t124738z",
+  "trainingSource": "benchmark",
+  "configSha256": "ae708426ee5f85739b204a290c456c3fa833ec5aa5ad5e7ef2b4a9e1ca962d1a",
+  "datasetSha256": "c3dc2fe341c6063d904fcf5adcc362aa02a4fdce960a7fbf53e48b88bf919e5d",
+  "requestedBy": "cli",
+  "recommended": false,
+  "artifactPath": "ocsvm-ops-v1-20261001t124738z/model.joblib",
+  "artifactSha256": "66a8f21d78ffc7fa13b16aab78e6ae42d597a6165f88067719be622c1500e070"
+}

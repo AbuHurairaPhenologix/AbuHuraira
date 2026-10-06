@@ -1,0 +1,210 @@
+{
+  "evaluationId": "eval-20261001t124738z-20261001t124752z",
+  "trainingRunId": "20261001t124738z",
+  "evaluatedAtUtc": "2026-10-01T12:48:02.692317+00:00",
+  "dataset": {
+    "path": "benchmark-ops-v1-seed20220215-ae708426ee.csv",
+    "sha256": "c3dc2fe341c6063d904fcf5adcc362aa02a4fdce960a7fbf53e48b88bf919e5d",
+    "testNormal": 8000,
+    "testAnomaly": 450
+  },
+  "configSha256": "ae708426ee5f85739b204a290c456c3fa833ec5aa5ad5e7ef2b4a9e1ca962d1a",
+  "randomSeed": 20220215,
+  "thresholdPolicy": "selected on validation split (quantiles of normal validation scores); test set untouched until now",
+  "decisionRule": "score >= threshold",
+  "recommendedByValidation": "ocsvm-ops-v1-20261001t124738z",
+  "results": [
+    {
+      "algorithm": "isolation_forest",
+      "displayName": "Isolation Forest",
+      "modelVersion": "if-ops-v1-20261001t124738z",
+      "productionEligible": true,
+      "threshold": 0.03445155732114671,
+      "thresholdQuantile": 0.944407949790795,
+      "thresholdObjective": "max_f1",
+      "validation": {
+        "precision": 0.30359937402190923,
+        "recall": 0.4311111111111111,
+        "f1": 0.3562901744719926,
+        "fpr": 0.055625,
+        "rocAuc": 0.8080163888888888,
+        "prAuc": 0.28170462702578897
+      },
+      "test": {
+        "precision": 0.31841652323580033,
+        "recall": 0.4111111111111111,
+        "f1": 0.3588748787584869,
+        "fpr": 0.0495,
+        "tp": 185,
+        "fp": 396,
+        "tn": 7604,
+        "fn": 265,
+        "rocAuc": 0.8250458333333333,
+        "prAuc": 0.3122569722717278,
+        "perTypeRecall": {
+          "auth_failure_burst": 0.37333333333333335,
+          "dependency_instability": 0.2,
+          "error_burst": 0.41333333333333333,
+          "latency_spike": 0.9466666666666667,
+          "retry_burst": 0.17333333333333334,
+          "traffic_surge": 0.36
+        },
+        "alertsPer1000Windows": 68.75739644970415
+      },
+      "testLibraryDefaultDecision": {
+        "precision": 0.23214285714285715,
+        "recall": 0.6355555555555555,
+        "f1": 0.34007134363852565,
+        "fpr": 0.11825,
+        "tp": 286,
+        "fp": 946,
+        "tn": 7054,
+        "fn": 164
+      }
+    },
+    {
+      "algorithm": "lof",
+      "displayName": "Local Outlier Factor",
+      "modelVersion": "lof-ops-v1-20261001t124738z",
+      "productionEligible": true,
+      "threshold": 0.04613182733526631,
+      "thresholdQuantile": 0.9953263598326361,
+      "thresholdObjective": "max_f1",
+      "validation": {
+        "precision": 0.8587360594795539,
+        "recall": 0.5133333333333333,
+        "f1": 0.642559109874826,
+        "fpr": 0.00475,
+        "rocAuc": 0.8159338888888887,
+        "prAuc": 0.6155946490458375
+      },
+      "test": {
+        "precision": 0.8592057761732852,
+        "recall": 0.5288888888888889,
+        "f1": 0.6547455295735901,
+        "fpr": 0.004875,
+        "tp": 238,
+        "fp": 39,
+        "tn": 7961,
+        "fn": 212,
+        "rocAuc": 0.8266691666666668,
+        "prAuc": 0.64218219617348,
+        "perTypeRecall": {
+          "auth_failure_burst": 0.5466666666666666,
+          "dependency_instability": 0.04,
+          "error_burst": 0.68,
+          "latency_spike": 0.8533333333333334,
+          "retry_burst": 0.05333333333333334,
+          "traffic_surge": 1.0
+        },
+        "alertsPer1000Windows": 32.781065088757394
+      },
+      "testLibraryDefaultDecision": {
+        "precision": 0.8085808580858086,
+        "recall": 0.5444444444444444,
+        "f1": 0.650730411686587,
+        "fpr": 0.00725,
+        "tp": 245,
+        "fp": 58,
+        "tn": 7942,
+        "fn": 205
+      }
+    },
+    {
+      "algorithm": "ocsvm",
+      "displayName": "One-Class SVM",
+      "modelVersion": "ocsvm-ops-v1-20261001t124738z",
+      "productionEligible": true,
+      "threshold": 2.915572299760499,
+      "thresholdQuantile": 0.9919874476987448,
+      "thresholdObjective": "max_f1",
+      "validation": {
+        "precision": 0.7903225806451613,
+        "recall": 0.5444444444444444,
+        "f1": 0.644736842105263,
+        "fpr": 0.008125,
+        "rocAuc": 0.8227972222222222,
+        "prAuc": 0.6357618080106092
+      },
+      "test": {
+        "precision": 0.8295819935691319,
+        "recall": 0.5733333333333334,
+        "f1": 0.6780551905387648,
+        "fpr": 0.006625,
+        "tp": 258,
+        "fp": 53,
+        "tn": 7947,
+        "fn": 192,
+        "rocAuc": 0.8300355555555556,
+        "prAuc": 0.6620928827312144,
+        "perTypeRecall": {
+          "auth_failure_burst": 0.5733333333333334,
+          "dependency_instability": 0.12,
+          "error_burst": 0.7733333333333333,
+          "latency_spike": 0.8666666666666667,
+          "retry_burst": 0.10666666666666667,
+          "traffic_surge": 1.0
+        },
+        "alertsPer1000Windows": 36.80473372781065
+      },
+      "testLibraryDefaultDecision": {
+        "precision": 0.4408759124087591,
+        "recall": 0.6711111111111111,
+        "f1": 0.5321585903083701,
+        "fpr": 0.047875,
+        "tp": 302,
+        "fp": 383,
+        "tn": 7617,
+        "fn": 148
+      }
+    },
+    {
+      "algorithm": "random_forest",
+      "displayName": "Random Forest (supervised ref.)",
+      "modelVersion": "rf-ops-v1-20261001t124738z",
+      "productionEligible": false,
+      "threshold": 0.5961037903300755,
+      "thresholdQuantile": 0.9944916317991632,
+      "thresholdObjective": "max_f1",
+      "validation": {
+        "precision": 0.8494983277591973,
+        "recall": 0.5644444444444444,
+        "f1": 0.678237650200267,
+        "fpr": 0.005625,
+        "rocAuc": 0.8473669444444443,
+        "prAuc": 0.6606325314367493
+      },
+      "test": {
+        "precision": 0.8538961038961039,
+        "recall": 0.5844444444444444,
+        "f1": 0.6939313984168867,
+        "fpr": 0.005625,
+        "tp": 263,
+        "fp": 45,
+        "tn": 7955,
+        "fn": 187,
+        "rocAuc": 0.8584730555555555,
+        "prAuc": 0.6803994268357844,
+        "perTypeRecall": {
+          "auth_failure_burst": 0.6133333333333333,
+          "dependency_instability": 0.013333333333333334,
+          "error_burst": 0.9466666666666667,
+          "latency_spike": 0.92,
+          "retry_burst": 0.013333333333333334,
+          "traffic_surge": 1.0
+        },
+        "alertsPer1000Windows": 36.44970414201183
+      },
+      "testLibraryDefaultDecision": {
+        "precision": 0.7852941176470588,
+        "recall": 0.5933333333333334,
+        "f1": 0.6759493670886076,
+        "fpr": 0.009125,
+        "tp": 267,
+        "fp": 73,
+        "tn": 7927,
+        "fn": 183
+      }
+    }
+  ]
+}
