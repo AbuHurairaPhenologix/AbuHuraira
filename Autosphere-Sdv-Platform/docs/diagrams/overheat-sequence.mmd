@@ -1,0 +1,19 @@
+sequenceDiagram
+    autonumber
+    participant UI as Dashboard
+    participant API as Backend
+    participant GW as Gateway
+    participant BMS as BMS-001 (simulated)
+    UI->>API: POST /api/vehicles/AUTO-001/faults {BatteryOverheat}
+    API->>GW: MQTT simulation/AUTO-001/faults
+    GW->>BMS: plant: battery cooling failure
+    loop every 100 ms
+        BMS-->>GW: CAN 0x300 BMS_Status (temperature rising)
+    end
+    GW->>API: MQTT alerts (battery-temperature Warning → Critical)
+    BMS->>BMS: monitor > 60 °C → P0A7E pending → confirmed + freeze frame
+    GW->>BMS: UDS 19 02 FF (periodic DTC poll)
+    BMS-->>GW: 59 02 FF 0A 7E 00 2F
+    GW->>API: MQTT dtcs (P0A7E active)
+    API->>API: health = Critical, backend alert
+    API-->>UI: SignalR Alert, DtcsChanged, VehicleUpdated

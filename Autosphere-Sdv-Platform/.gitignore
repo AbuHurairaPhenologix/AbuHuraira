@@ -1,0 +1,74 @@
+# ---- .NET build output ----
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa]rtifacts/
+*.nupkg
+*.snupkg
+project.lock.json
+*.tlog
+TestResults/
+BenchmarkDotNet.Artifacts/
+coverage*.json
+coverage*.xml
+*.coverage
+*.trx
+
+# ---- Visual Studio ----
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.rsuser
+launchSettings.local.json
+
+# ---- JetBrains Rider ----
+.idea/
+*.sln.iml
+
+# ---- VS Code ----
+**/.vscode/*
+!/.vscode/extensions.json
+!/.vscode/settings.json
+
+# ---- Angular / Node ----
+node_modules/
+dist/
+.angular/
+out-tsc/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+.pnpm-store/
+
+# ---- Docker ----
+docker/volumes/
+*.override.yml
+!docker-compose.override.example.yml
+
+# ---- Environment and secrets ----
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.key
+*.pem
+!**/testdata/*.pem
+.keys/
+secrets/
+appsettings.*.local.json
+
+# ---- Logs and temporary files ----
+logs/
+*.log
+*.tmp
+*.swp
+.DS_Store
+Thumbs.db

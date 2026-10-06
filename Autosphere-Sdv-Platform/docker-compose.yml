@@ -1,0 +1,146 @@
+# AutoSphere — complete demo stack.
+#
+#   cp .env.example .env      # adjust values
+#   docker compose up -d --build
+#
+# Dashboard:  http://localhost:${WEB_PORT:-8080}
+# Swagger:    http://localhost:${API_PORT:-5080}/swagger
+# Health:     http://localhost:${API_PORT:-5080}/health
+#
+# The `gateway` service hosts the simulated ECUs in-process on an in-memory CAN bus, so the complete
+# demonstration runs without vehicle hardware. Infrastructure only: docker compose up -d postgres redis mqtt
+
+name: autosphere
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-autosphere}
+      POSTGRES_USER: ${POSTGRES_USER:-autosphere}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mqtt:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    ports:
+      - "${MQTT_PORT:-1883}:1883"
+      - "9001:9001"
+    volumes:
+      - ./docker/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto-data:/mosquitto/data
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_sub -t '$$SYS/broker/uptime' -C 1 -W 3 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    image: autosphere/api:local
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      mqtt:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__AutoSphere: Host=postgres;Port=5432;Database=${POSTGRES_DB:-autosphere};Username=${POSTGRES_USER:-autosphere};Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__Redis: redis:6379
+      Mqtt__Host: mqtt
+      Mqtt__Port: "1883"
+      Jwt__SigningKey: ${JWT_SIGNING_KEY:?Set JWT_SIGNING_KEY in .env}
+      Seed__Enabled: "true"
+      Seed__AdminPassword: ${SEED_ADMIN_PASSWORD:-}
+      Seed__EngineerPassword: ${SEED_ENGINEER_PASSWORD:-}
+      Seed__ViewerPassword: ${SEED_VIEWER_PASSWORD:-}
+      FaultInjection__Enabled: ${FAULT_INJECTION_ENABLED:-false}
+      Swagger__Enabled: "true"
+      Cors__AllowedOrigins__0: http://localhost:${WEB_PORT:-8080}
+      Cors__AllowedOrigins__1: http://localhost:4200
+      # The private signing key lives in a volume only the API mounts; the public key (trust anchor)
+      # is shared read-only with the gateway.
+      Ota__Signing__PrivateKeyPath: /ota/private/ota-signing-private.pem
+      Ota__Signing__PublicKeyPath: /ota/trust/ota-signing-public.pem
+      Ota__Signing__GenerateIfMissing: "true"
+    ports:
+      - "${API_PORT:-5080}:8080"
+    volumes:
+      - ota-private:/ota/private
+      - ota-trust:/ota/trust
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health/live >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  gateway:
+    build:
+      context: .
+      dockerfile: docker/gateway.Dockerfile
+    image: autosphere/gateway:local
+    restart: unless-stopped
+    depends_on:
+      mqtt:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+    environment:
+      DOTNET_ENVIRONMENT: Production
+      Mqtt__Host: mqtt
+      Mqtt__Port: "1883"
+      Gateway__VehicleId: AUTO-001
+      Gateway__SecurityAccessSecret: ${SECURITY_ACCESS_SECRET:?Set SECURITY_ACCESS_SECRET in .env}
+      Gateway__OtaTrustedPublicKeyPath: /ota/trust/ota-signing-public.pem
+      CanBus__Transport: InMemory
+      Simulation__Enabled: "true"
+      Simulation__FaultInjectionEnabled: ${FAULT_INJECTION_ENABLED:-false}
+      Gateway__FaultInjectionEnabled: ${FAULT_INJECTION_ENABLED:-false}
+    volumes:
+      - ota-trust:/ota/trust:ro
+
+  web:
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    image: autosphere/web:local
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-8080}:80"
+
+volumes:
+  postgres-data:
+  mosquitto-data:
+  ota-private:
+  ota-trust:

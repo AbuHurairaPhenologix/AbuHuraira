@@ -1,0 +1,63 @@
+<div class="layout" [class.menu-open]="menuOpen()">
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◈</span>
+      <div>
+        <strong>AutoSphere</strong>
+        <span class="tagline">SDV Platform</span>
+      </div>
+    </div>
+    <nav>
+      @for (item of nav(); track item.path) {
+        <a [routerLink]="item.path" routerLinkActive="active" (click)="menuOpen.set(false)">
+          <span class="nav-icon" aria-hidden="true">{{ item.icon }}</span>{{ item.label }}
+        </a>
+      }
+    </nav>
+    <div class="sidebar-footer">
+      <span class="muted">Signed in as</span>
+      <strong>{{ auth.user() }}</strong>
+      <span class="muted">{{ auth.roles().join(', ') }}</span>
+      <button class="small" (click)="auth.logout()">Sign out</button>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-toggle" (click)="menuOpen.set(!menuOpen())" aria-label="Toggle navigation">☰</button>
+      <label class="vehicle-select">
+        <span class="sr-only">Vehicle</span>
+        <select [value]="store.selectedId() ?? ''" (change)="selectVehicle($event)">
+          @for (v of store.vehicles(); track v.vehicleId) {
+            <option [value]="v.vehicleId">{{ v.vehicleId }} — {{ v.model }}</option>
+          }
+        </select>
+      </label>
+      @if (store.vehicle(); as vehicle) {
+        <app-status [value]="vehicle.connectivity" [label]="'Gateway ' + vehicle.connectivity" />
+        <app-status [value]="vehicle.health.status" [label]="'Health ' + vehicle.health.status" />
+        @if (vehicle.simulationMode) {
+          <span class="sim-flag" title="ECUs are simulated">Simulated vehicle</span>
+        }
+      }
+      <span class="spacer"></span>
+      <span class="link" [class]="'link ' + store.link()" [title]="'Live connection: ' + store.link()">
+        <span class="dot" aria-hidden="true"></span>
+        Live {{ store.link() === 'connected' ? '' : '(' + store.link() + ')' }}
+        @if (store.dashboardLatencyMs() !== null && store.link() === 'connected') {
+          <span class="muted">· {{ store.telemetry()?.latency?.canToBackendMs ?? 0 | number: '1.0-0' }} + {{ store.dashboardLatencyMs() | number: '1.0-0' }} ms</span>
+        }
+      </span>
+      <button class="small" (click)="cycleTheme()" [title]="'Theme: ' + theme()">
+        {{ theme() === 'dark' ? '☾' : theme() === 'light' ? '☀' : '◐' }}
+      </button>
+    </header>
+
+    @if (startError()) {
+      <div class="page"><div class="notice error">{{ startError() }}</div></div>
+    }
+    <main>
+      <router-outlet />
+    </main>
+  </div>
+</div>
