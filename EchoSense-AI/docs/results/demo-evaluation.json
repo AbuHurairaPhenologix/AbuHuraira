@@ -1,0 +1,106 @@
+{
+  "recording": "future-ai-conference.wav",
+  "duration_s": 184.287,
+  "analysis_time_s": 268.53,
+  "transcription": {
+    "reference_words": 333,
+    "hypothesis_words": 334,
+    "wer": 0.033,
+    "mean_start_offset_s": 0.06
+  },
+  "speakers": {
+    "true": 3,
+    "predicted": 3,
+    "attribution_accuracy": 1.0,
+    "mapping": {
+      "Speaker 1": "Speaker 1",
+      "Speaker 2": "Speaker 2",
+      "Speaker 3": "Speaker 3"
+    }
+  },
+  "events": {
+    "planted": [
+      {
+        "label": "Music",
+        "start": 0.0,
+        "end": 7.0,
+        "category": "Music",
+        "detected": true,
+        "confidence": 0.528
+      },
+      {
+        "label": "Applause",
+        "start": 17.82,
+        "end": 21.82,
+        "category": "Applause",
+        "detected": true,
+        "confidence": 0.505
+      },
+      {
+        "label": "Keyboard",
+        "start": 52.35,
+        "end": 56.35,
+        "category": "Keyboard",
+        "detected": false,
+        "confidence": null
+      },
+      {
+        "label": "Door",
+        "start": 76.36,
+        "end": 79.76,
+        "category": "Door",
+        "detected": false,
+        "confidence": null
+      },
+      {
+        "label": "Siren",
+        "start": 93.85,
+        "end": 99.85,
+        "category": "Siren",
+        "detected": true,
+        "confidence": 0.655
+      },
+      {
+        "label": "Anomaly (glass shatter)",
+        "start": 118.69,
+        "end": 120.29,
+        "category": "Impact",
+        "detected": false,
+        "confidence": null
+      },
+      {
+        "label": "Alarm",
+        "start": 138.2,
+        "end": 141.2,
+        "category": "Alarm",
+        "detected": true,
+        "confidence": 0.811
+      },
+      {
+        "label": "Applause",
+        "start": 169.49,
+        "end": 173.49,
+        "category": "Applause",
+        "detected": true,
+        "confidence": 0.227
+      },
+      {
+        "label": "Music",
+        "start": 174.39,
+        "end": 182.39,
+        "category": "Music",
+        "detected": true,
+        "confidence": 0.582
+      }
+    ],
+    "recall": 0.667,
+    "non_speech_detections": 7,
+    "detections_without_planted_source": 0
+  },
+  "anomaly": {
+    "planted_at": 118.69,
+    "detected": true,
+    "score": 0.737,
+    "other_regions_flagged": 0
+  }
+}
