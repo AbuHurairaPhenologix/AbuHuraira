@@ -1,0 +1,416 @@
+{
+  "trainedAt": "2026-10-07T13:33:02+00:00",
+  "algorithm": "Linear Regression (ordinary least squares)",
+  "rows": 320,
+  "trainRows": 256,
+  "testRows": 64,
+  "mae": 4.21,
+  "rmse": 5.05,
+  "r2": 0.846,
+  "baselineMae": 10.57,
+  "categoryAccuracy": 0.719,
+  "meanError": 0.1,
+  "errorStd": 5.09,
+  "intercept": -8.766,
+  "coefficients": [
+    {
+      "feature": "attendance",
+      "label": "Attendance (%)",
+      "weight": 0.2334
+    },
+    {
+      "feature": "study_hours",
+      "label": "Study hours / week",
+      "weight": 0.8954
+    },
+    {
+      "feature": "assignment_avg",
+      "label": "Assignment average",
+      "weight": 0.294
+    },
+    {
+      "feature": "quiz_avg",
+      "label": "Quiz average",
+      "weight": 0.1826
+    },
+    {
+      "feature": "previous_exam",
+      "label": "Previous exam score",
+      "weight": 0.2599
+    }
+  ],
+  "statistics": [
+    {
+      "feature": "attendance",
+      "label": "Attendance (%)",
+      "mean": 81.25,
+      "std": 10.27,
+      "min": 40.8,
+      "max": 100.0,
+      "correlation": 0.447
+    },
+    {
+      "feature": "study_hours",
+      "label": "Study hours / week",
+      "mean": 9.9,
+      "std": 4.69,
+      "min": 1.0,
+      "max": 24.3,
+      "correlation": 0.714
+    },
+    {
+      "feature": "assignment_avg",
+      "label": "Assignment average",
+      "mean": 71.09,
+      "std": 11.49,
+      "min": 39.8,
+      "max": 98.3,
+      "correlation": 0.806
+    },
+    {
+      "feature": "quiz_avg",
+      "label": "Quiz average",
+      "mean": 66.88,
+      "std": 12.54,
+      "min": 25.6,
+      "max": 100.0,
+      "correlation": 0.664
+    },
+    {
+      "feature": "previous_exam",
+      "label": "Previous exam score",
+      "mean": 64.37,
+      "std": 12.79,
+      "min": 29.1,
+      "max": 95.4,
+      "correlation": 0.587
+    },
+    {
+      "feature": "final_score",
+      "label": "Final score",
+      "mean": 68.92,
+      "std": 12.25,
+      "min": 34.3,
+      "max": 100.0,
+      "correlation": 1.0
+    }
+  ],
+  "correlationMatrix": {
+    "features": [
+      "attendance",
+      "study_hours",
+      "assignment_avg",
+      "quiz_avg",
+      "previous_exam",
+      "final_score"
+    ],
+    "values": [
+      [
+        1.0,
+        0.625,
+        0.277,
+        0.052,
+        -0.143,
+        0.447
+      ],
+      [
+        0.625,
+        1.0,
+        0.536,
+        0.331,
+        0.146,
+        0.714
+      ],
+      [
+        0.277,
+        0.536,
+        1.0,
+        0.613,
+        0.586,
+        0.806
+      ],
+      [
+        0.052,
+        0.331,
+        0.613,
+        1.0,
+        0.625,
+        0.664
+      ],
+      [
+        -0.143,
+        0.146,
+        0.586,
+        0.625,
+        1.0,
+        0.587
+      ],
+      [
+        0.447,
+        0.714,
+        0.806,
+        0.664,
+        0.587,
+        1.0
+      ]
+    ]
+  },
+  "testPredictions": [
+    {
+      "actual": 44.5,
+      "predicted": 55.8
+    },
+    {
+      "actual": 89.1,
+      "predicted": 83.9
+    },
+    {
+      "actual": 52.5,
+      "predicted": 49.4
+    },
+    {
+      "actual": 69.6,
+      "predicted": 71.5
+    },
+    {
+      "actual": 76.4,
+      "predicted": 73.5
+    },
+    {
+      "actual": 65.0,
+      "predicted": 71.4
+    },
+    {
+      "actual": 66.0,
+      "predicted": 61.5
+    },
+    {
+      "actual": 83.4,
+      "predicted": 78.2
+    },
+    {
+      "actual": 67.6,
+      "predicted": 64.0
+    },
+    {
+      "actual": 92.2,
+      "predicted": 90.6
+    },
+    {
+      "actual": 74.2,
+      "predicted": 72.6
+    },
+    {
+      "actual": 73.8,
+      "predicted": 65.1
+    },
+    {
+      "actual": 59.4,
+      "predicted": 66.6
+    },
+    {
+      "actual": 64.3,
+      "predicted": 69.1
+    },
+    {
+      "actual": 79.2,
+      "predicted": 77.9
+    },
+    {
+      "actual": 75.9,
+      "predicted": 76.4
+    },
+    {
+      "actual": 50.0,
+      "predicted": 44.8
+    },
+    {
+      "actual": 90.5,
+      "predicted": 91.2
+    },
+    {
+      "actual": 88.4,
+      "predicted": 91.6
+    },
+    {
+      "actual": 77.3,
+      "predicted": 79.5
+    },
+    {
+      "actual": 64.4,
+      "predicted": 68.4
+    },
+    {
+      "actual": 72.1,
+      "predicted": 67.5
+    },
+    {
+      "actual": 53.9,
+      "predicted": 54.0
+    },
+    {
+      "actual": 71.4,
+      "predicted": 73.9
+    },
+    {
+      "actual": 94.4,
+      "predicted": 90.1
+    },
+    {
+      "actual": 76.1,
+      "predicted": 75.7
+    },
+    {
+      "actual": 63.6,
+      "predicted": 65.6
+    },
+    {
+      "actual": 50.5,
+      "predicted": 52.0
+    },
+    {
+      "actual": 72.3,
+      "predicted": 64.7
+    },
+    {
+      "actual": 77.0,
+      "predicted": 74.8
+    },
+    {
+      "actual": 89.1,
+      "predicted": 85.4
+    },
+    {
+      "actual": 58.1,
+      "predicted": 58.7
+    },
+    {
+      "actual": 60.8,
+      "predicted": 54.8
+    },
+    {
+      "actual": 52.8,
+      "predicted": 57.1
+    },
+    {
+      "actual": 55.7,
+      "predicted": 55.9
+    },
+    {
+      "actual": 69.0,
+      "predicted": 71.3
+    },
+    {
+      "actual": 65.4,
+      "predicted": 58.0
+    },
+    {
+      "actual": 61.7,
+      "predicted": 57.5
+    },
+    {
+      "actual": 73.4,
+      "predicted": 69.5
+    },
+    {
+      "actual": 51.2,
+      "predicted": 59.8
+    },
+    {
+      "actual": 34.3,
+      "predicted": 42.7
+    },
+    {
+      "actual": 53.5,
+      "predicted": 56.6
+    },
+    {
+      "actual": 44.2,
+      "predicted": 48.5
+    },
+    {
+      "actual": 61.4,
+      "predicted": 68.0
+    },
+    {
+      "actual": 73.1,
+      "predicted": 67.8
+    },
+    {
+      "actual": 67.9,
+      "predicted": 70.3
+    },
+    {
+      "actual": 75.3,
+      "predicted": 70.3
+    },
+    {
+      "actual": 51.4,
+      "predicted": 61.2
+    },
+    {
+      "actual": 71.2,
+      "predicted": 78.6
+    },
+    {
+      "actual": 61.8,
+      "predicted": 71.1
+    },
+    {
+      "actual": 76.0,
+      "predicted": 73.9
+    },
+    {
+      "actual": 63.3,
+      "predicted": 61.0
+    },
+    {
+      "actual": 79.5,
+      "predicted": 72.1
+    },
+    {
+      "actual": 68.1,
+      "predicted": 60.2
+    },
+    {
+      "actual": 61.9,
+      "predicted": 64.7
+    },
+    {
+      "actual": 77.3,
+      "predicted": 76.1
+    },
+    {
+      "actual": 75.9,
+      "predicted": 71.3
+    },
+    {
+      "actual": 84.0,
+      "predicted": 82.6
+    },
+    {
+      "actual": 64.2,
+      "predicted": 58.5
+    },
+    {
+      "actual": 57.8,
+      "predicted": 60.3
+    },
+    {
+      "actual": 84.1,
+      "predicted": 77.3
+    },
+    {
+      "actual": 81.7,
+      "predicted": 81.7
+    },
+    {
+      "actual": 59.8,
+      "predicted": 58.8
+    },
+    {
+      "actual": 47.9,
+      "predicted": 58.2
+    }
+  ]
+}

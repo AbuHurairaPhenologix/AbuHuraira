@@ -1,0 +1,132 @@
+@page "{id:int?}"
+@model ResultModel
+@{
+    ViewData["Title"] = "Prediction Result";
+    var p = Model.Prediction;
+    var ringColor = p?.Category switch
+    {
+        "Excellent" => "var(--aqua)",
+        "Good" => "var(--blue)",
+        "Average" => "var(--amber)",
+        _ => "var(--red)",
+    };
+    var maxImpact = Model.Impacts.Count == 0 ? 1 : Math.Max(1, Model.Impacts.Max(i => Math.Abs(i.ImpactPoints)));
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Prediction Result</h1>
+            <p>Model output, the reasoning behind it and the full prediction history.</p>
+        </div>
+        <a class="btn primary" href="/Predict">✎ New prediction</a>
+    </div>
+
+    @if (p is null)
+    {
+        <div class="card"><p class="sub">No predictions yet. <a href="/Predict">Make the first one.</a></p></div>
+    }
+    else
+    {
+        <div class="grid g-3">
+            <div class="card">
+                <h2>@p.StudentName</h2>
+                <p class="sub">Predicted on @p.CreatedAt.ToString("dd MMM yyyy, HH:mm")</p>
+                <div class="score-hero">
+                    <div class="score-ring" style="--pct:@p.PredictedScore.ToString("0.0");--ring-color:@ringColor">
+                        <div class="score-ring-inner">
+                            <div><strong>@p.PredictedScore.ToString("0.0")</strong><span>expected final score</span></div>
+                        </div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:10px">
+                        <div><partial name="_CategoryBadge" model="p.Category" /></div>
+                        <div class="muted">Likely range<br /><span style="color:var(--ink-1);font-size:16px">@p.Lower.ToString("0.0") – @p.Upper.ToString("0.0")</span></div>
+                        <div class="muted" style="font-size:12px">± RMSE of @Model.Rmse.ToString("0.00") points<br />measured on the test set</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card span-2">
+                <h2>Why this score?</h2>
+                <p class="sub">
+                    Points each indicator adds or removes compared with an average student
+                    (predicted @Model.AverageStudentScore.ToString("0.0")). Impact = wᵢ · (xᵢ − meanᵢ).
+                </p>
+                @foreach (var i in Model.Impacts)
+                {
+                    var width = Math.Abs(i.ImpactPoints) / maxImpact * 50;
+                    var positive = i.ImpactPoints >= 0;
+                    <div class="bar-row" style="grid-template-columns:170px 1fr 70px">
+                        <div>
+                            <div style="color:var(--ink-1)">@i.Label</div>
+                            <div class="muted" style="font-size:12px">@i.Value.ToString("0.#") vs mean @i.Mean.ToString("0.#") · z = @i.ZScore.ToString("+0.00;-0.00")</div>
+                        </div>
+                        <div class="bar-track" style="position:relative;background:var(--surface-2)">
+                            <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:var(--line-strong)"></div>
+                            <div style="position:absolute;top:0;bottom:0;@(positive ? "left:50%" : $"right:50%");width:@width.ToString("0.0")%;background:@(positive ? "var(--aqua)" : "var(--red)");border-radius:@(positive ? "0 4px 4px 0" : "4px 0 0 4px")"></div>
+                        </div>
+                        <div class="num" style="text-align:right;color:var(--ink-1)">@i.ImpactPoints.ToString("+0.0;−0.0")</div>
+                    </div>
+                }
+                <p class="muted" style="font-size:12px;margin:10px 0 0">
+                    Average student @Model.AverageStudentScore.ToString("0.0") @(Model.Impacts.Sum(i => i.ImpactPoints).ToString("+0.0;−0.0")) from the indicators above = @((Model.AverageStudentScore + Model.Impacts.Sum(i => i.ImpactPoints)).ToString("0.0")) (before clipping to 0–100).
+                </p>
+            </div>
+        </div>
+
+        <div class="grid g-2">
+            <div class="card">
+                <h2>Suggested actions</h2>
+                <p class="sub">Simple rules based on the model weights and the inputs</p>
+                <ul class="tips">
+                    @foreach (var tip in Model.Recommendations)
+                    {
+                        <li>@tip</li>
+                    }
+                </ul>
+            </div>
+            <div class="card">
+                <h2>Model calculation</h2>
+                <p class="sub">score = b₀ + Σ wᵢ · xᵢ</p>
+                <table>
+                    <thead><tr><th>Term</th><th class="r">Value</th><th class="r">Points</th></tr></thead>
+                    <tbody>
+                    <tr><td>Intercept b₀</td><td class="r muted">–</td><td class="r">@Model.Intercept.ToString("0.00")</td></tr>
+                    @foreach (var i in Model.Impacts)
+                    {
+                        <tr><td>@i.Label</td><td class="r">@i.Value.ToString("0.#")</td><td class="r">@i.ContributionPoints.ToString("0.00")</td></tr>
+                    }
+                    <tr><td style="color:var(--ink-1);font-weight:600">Predicted score</td><td></td><td class="r" style="color:var(--ink-1);font-weight:600">@p.PredictedScore.ToString("0.0")</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <div class="card">
+        <h2>Prediction history</h2>
+        <p class="sub">@Model.History.Count predictions saved in SQLite</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr><th>Student</th><th>Date</th><th class="r">Attendance</th><th class="r">Study h</th><th class="r">Assign.</th><th class="r">Quiz</th><th class="r">Prev. exam</th><th class="r">Predicted</th><th>Category</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var h in Model.History)
+                {
+                    <tr style="@(h.Id == p?.Id ? "background:rgba(57,135,229,0.08)" : "")">
+                        <td><a href="/Result/@h.Id">@h.StudentName</a></td>
+                        <td class="muted">@h.CreatedAt.ToString("dd MMM, HH:mm")</td>
+                        <td class="r">@h.Attendance.ToString("0.#")%</td>
+                        <td class="r">@h.StudyHours.ToString("0.#")</td>
+                        <td class="r">@h.AssignmentAvg.ToString("0.#")</td>
+                        <td class="r">@h.QuizAvg.ToString("0.#")</td>
+                        <td class="r">@h.PreviousExam.ToString("0.#")</td>
+                        <td class="r" style="color:var(--ink-1)">@h.PredictedScore.ToString("0.0")</td>
+                        <td><partial name="_CategoryBadge" model="h.Category" /></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,44 @@
+@{
+    var path = Context.Request.Path.Value ?? "/";
+    string Active(string prefix) =>
+        (prefix == "/" ? path == "/" : path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) ? "nav-link active" : "nav-link";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · Student Performance Predictor</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="~/lib/chart.umd.min.js"></script>
+    <script src="~/js/charts.js" asp-append-version="true"></script>
+</head>
+<body>
+<div class="shell">
+    <aside class="sidebar">
+        <div class="sidebar-inner">
+            <div class="brand">
+                <div class="brand-mark">SP</div>
+                <div>
+                    <div class="brand-title">Student Performance</div>
+                    <div class="brand-sub">ML Predictor</div>
+                </div>
+            </div>
+            <a class="@Active("/")" href="/"><span class="ico">▦</span> Dashboard</a>
+            <a class="@Active("/Predict")" href="/Predict"><span class="ico">✎</span> Predict Student</a>
+            <a class="@Active("/Result")" href="/Result"><span class="ico">◎</span> Prediction Results</a>
+            <a class="@Active("/Students")" href="/Students"><span class="ico">☰</span> Student Records</a>
+            <a class="@Active("/Model")" href="/Model"><span class="ico">∑</span> Model Statistics</a>
+            <div class="sidebar-foot">
+                ASP.NET Core · Python · scikit-learn<br />
+                Linear Regression model
+            </div>
+        </div>
+    </aside>
+    <main class="main">
+        @RenderBody()
+    </main>
+</div>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

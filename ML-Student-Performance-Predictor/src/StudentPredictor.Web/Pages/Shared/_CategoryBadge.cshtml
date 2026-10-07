@@ -1,0 +1,5 @@
+@model string?
+@if (!string.IsNullOrEmpty(Model))
+{
+    <span class="badge @Model.ToLowerInvariant().Replace(' ', '-')">@Model</span>
+}

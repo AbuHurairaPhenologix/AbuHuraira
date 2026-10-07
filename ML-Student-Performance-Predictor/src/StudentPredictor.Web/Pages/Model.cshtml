@@ -1,0 +1,208 @@
+@page
+@model ModelStatsModel
+@{
+    ViewData["Title"] = "Model Statistics";
+    var m = Model.Metrics;
+    var shortNames = new Dictionary<string, string>
+    {
+        ["attendance"] = "Attend.", ["study_hours"] = "Study h", ["assignment_avg"] = "Assign.",
+        ["quiz_avg"] = "Quiz", ["previous_exam"] = "Prev. exam", ["final_score"] = "Final",
+    };
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Model Statistics</h1>
+            <p>How well the Linear Regression model predicts final scores on students it has never seen.</p>
+        </div>
+        <form method="post" asp-page-handler="Retrain">
+            <button class="btn" type="submit">↻ Retrain model</button>
+        </form>
+    </div>
+
+    @if (Model.Message is not null)
+    {
+        <div class="alert">@Model.Message</div>
+    }
+
+    @if (m is null)
+    {
+        <div class="card"><p class="sub">The model has not been trained yet. Run <code>python ml/train_model.py</code>.</p></div>
+    }
+    else
+    {
+        <div class="grid g-5">
+            <div class="card kpi">
+                <div class="kpi-label">MAE</div>
+                <div class="kpi-value">@m.Mae.ToString("0.00")</div>
+                <div class="kpi-note">mean absolute error (points)</div>
+            </div>
+            <div class="card kpi">
+                <div class="kpi-label">RMSE</div>
+                <div class="kpi-value">@m.Rmse.ToString("0.00")</div>
+                <div class="kpi-note">root mean squared error</div>
+            </div>
+            <div class="card kpi">
+                <div class="kpi-label">R²</div>
+                <div class="kpi-value">@m.R2.ToString("0.000")</div>
+                <div class="kpi-note">share of variance explained</div>
+            </div>
+            <div class="card kpi">
+                <div class="kpi-label">Baseline MAE</div>
+                <div class="kpi-value">@m.BaselineMae.ToString("0.00")</div>
+                <div class="kpi-note">always predicting the mean</div>
+            </div>
+            <div class="card kpi">
+                <div class="kpi-label">Category accuracy</div>
+                <div class="kpi-value">@((m.CategoryAccuracy * 100).ToString("0.0"))%</div>
+                <div class="kpi-note">correct band on the test set</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Learned regression equation</h2>
+            <p class="sub">@m.Algorithm · trained on @m.TrainRows students, tested on @m.TestRows (80 / 20 split) · @m.TrainedAt.ToLocalTime().ToString("dd MMM yyyy, HH:mm")</p>
+            <div class="equation">
+                Final score = @m.Intercept.ToString("0.00")
+                @foreach (var c in m.Coefficients)
+                {
+                    <span> @(c.Weight >= 0 ? "+" : "−") @Math.Abs(c.Weight).ToString("0.000") × @c.Label.ToLowerInvariant()</span>
+                }
+            </div>
+        </div>
+
+        <div class="grid g-2">
+            <div class="card">
+                <h2>Actual vs predicted (test set)</h2>
+                <p class="sub">Each dot is one unseen student. Points on the dashed line are perfect predictions.</p>
+                <div class="chart-box tall"><canvas id="scatterChart" aria-label="Actual versus predicted final score"></canvas></div>
+            </div>
+            <div class="card">
+                <h2>Prediction error distribution</h2>
+                <p class="sub">Error = predicted − actual. Mean error @m.MeanError.ToString("+0.00;−0.00"), standard deviation @m.ErrorStd.ToString("0.00").</p>
+                <div class="chart-box tall"><canvas id="errorChart" aria-label="Histogram of prediction errors"></canvas></div>
+            </div>
+        </div>
+
+        <div class="grid g-2">
+            <div class="card">
+                <h2>Descriptive statistics</h2>
+                <p class="sub">Mean, standard deviation and Pearson correlation r with the final score</p>
+                <table>
+                    <thead><tr><th>Variable</th><th class="r">Mean</th><th class="r">Std dev</th><th class="r">Min</th><th class="r">Max</th><th class="r">r with final</th></tr></thead>
+                    <tbody>
+                    @foreach (var s in m.Statistics)
+                    {
+                        <tr>
+                            <td style="color:var(--ink-1)">@s.Label</td>
+                            <td class="r">@s.Mean.ToString("0.00")</td>
+                            <td class="r">@s.Std.ToString("0.00")</td>
+                            <td class="r">@s.Min.ToString("0.0")</td>
+                            <td class="r">@s.Max.ToString("0.0")</td>
+                            <td class="r" style="color:var(--ink-1)">@s.Correlation.ToString("0.000")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div class="card">
+                <h2>Correlation matrix</h2>
+                <p class="sub">Pearson r between every pair of variables (blue = positive, red = negative)</p>
+                <div class="table-wrap">
+                    <table class="heat">
+                        <thead>
+                        <tr><th></th>
+                            @foreach (var f in m.CorrelationMatrix.Features)
+                            {
+                                <th style="text-align:center">@shortNames[f]</th>
+                            }
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @for (var i = 0; i < m.CorrelationMatrix.Features.Count; i++)
+                        {
+                            <tr>
+                                <th>@shortNames[m.CorrelationMatrix.Features[i]]</th>
+                                @foreach (var r in m.CorrelationMatrix.Values[i])
+                                {
+                                    <td style="background:@ModelStatsModel.HeatColor(r)">@r.ToString("0.00")</td>
+                                }
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Feature weights</h2>
+            <p class="sub">Points added to the final score per unit increase of each input (other inputs held constant)</p>
+            <div class="chart-box short"><canvas id="weightChart" aria-label="Regression coefficient per feature"></canvas></div>
+        </div>
+
+        <div class="card">
+            <h2>Formulas used</h2>
+            <div class="grid g-3" style="gap:12px">
+                <div class="equation">MAE = (1/n) Σ |yᵢ − ŷᵢ|</div>
+                <div class="equation">RMSE = √( (1/n) Σ (yᵢ − ŷᵢ)² )</div>
+                <div class="equation">R² = 1 − Σ(yᵢ − ŷᵢ)² / Σ(yᵢ − ȳ)²</div>
+                <div class="equation">mean x̄ = (1/n) Σ xᵢ</div>
+                <div class="equation">σ = √( Σ (xᵢ − x̄)² / (n − 1) )</div>
+                <div class="equation">r = cov(x, y) / (σₓ σᵧ)</div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @if (m is not null)
+    {
+    var hist = Model.ErrorHistogram();
+    <script>
+        const points = @Json.Serialize(m.TestPredictions.Select(t => new { x = t.Actual, y = t.Predicted }));
+        new Chart(document.getElementById('scatterChart'), {
+            type: 'scatter',
+            data: {
+                datasets: [
+                    { label: 'Test students', data: points, backgroundColor: 'rgba(57,135,229,0.85)', borderColor: '#151514', borderWidth: 2, pointRadius: 5, pointHoverRadius: 7 },
+                    { label: 'Perfect prediction', type: 'line', data: [{ x: 30, y: 30 }, { x: 100, y: 100 }], borderColor: '#898781', borderDash: [6, 5], borderWidth: 1.5, pointRadius: 0 }
+                ]
+            },
+            options: {
+                plugins: { tooltip: { callbacks: { label: c => `Actual ${c.parsed.x.toFixed(1)} · predicted ${c.parsed.y.toFixed(1)}` } } },
+                scales: {
+                    x: { min: 30, max: 100, title: axisTitle('Actual final score') },
+                    y: { min: 30, max: 100, title: axisTitle('Predicted final score') }
+                }
+            }
+        });
+
+        new Chart(document.getElementById('errorChart'), {
+            type: 'bar',
+            data: {
+                labels: @Json.Serialize(hist.Labels),
+                datasets: [{ label: 'Test students', data: @Json.Serialize(hist.Counts), backgroundColor: '#9085e9', borderRadius: 4, borderSkipped: 'start', categoryPercentage: 0.94, barPercentage: 0.96 }]
+            },
+            options: {
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { display: false }, title: axisTitle('Prediction error, points (2-point bins, labelled by centre)') }, y: { beginAtZero: true, ticks: { precision: 0 }, title: axisTitle('Students') } }
+            }
+        });
+
+        const weights = @Json.Serialize(m.Coefficients);
+        new Chart(document.getElementById('weightChart'), {
+            type: 'bar',
+            data: {
+                labels: weights.map(w => w.label),
+                datasets: [{ label: 'Weight', data: weights.map(w => w.weight), backgroundColor: '#3987e5', borderRadius: 4, borderSkipped: 'start', maxBarThickness: 26 }]
+            },
+            options: {
+                indexAxis: 'y',
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => `${c.parsed.x >= 0 ? '+' : ''}${c.parsed.x.toFixed(3)} points per unit` } } },
+                scales: { x: { beginAtZero: true, title: axisTitle('Points per unit') }, y: { grid: { display: false } } }
+            }
+        });
+    </script>
+    }
+}

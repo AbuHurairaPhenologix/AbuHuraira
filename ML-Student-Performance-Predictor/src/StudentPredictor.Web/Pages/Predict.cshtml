@@ -1,0 +1,95 @@
+@page
+@model PredictModel
+@{
+    ViewData["Title"] = "Predict Student";
+    (string Name, string Label, string Hint, double Max, double Step)[] fields =
+    [
+        ("Attendance", "Attendance (%)", "Share of lectures and labs attended", 100, 0.5),
+        ("StudyHours", "Study hours per week", "Self-study outside class", 40, 0.5),
+        ("AssignmentAvg", "Assignment average", "Average mark across submitted assignments (0–100)", 100, 0.5),
+        ("QuizAvg", "Quiz average", "Average mark across weekly quizzes (0–100)", 100, 0.5),
+        ("PreviousExam", "Previous exam score", "Score in the previous term's exam (0–100)", 100, 0.5),
+    ];
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Predict Student Performance</h1>
+            <p>Enter a student's current indicators. The Python model returns the expected final score and a performance category.</p>
+        </div>
+    </div>
+
+    <div class="grid g-3">
+        <form method="post" class="card span-2">
+            <h2>Student information</h2>
+            <p class="sub">All marks are on a 0–100 scale</p>
+            <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+            <div class="form-grid">
+                <div class="field" style="grid-column: 1 / -1">
+                    <label asp-for="Input.StudentName"></label>
+                    <input asp-for="Input.StudentName" placeholder="e.g. Maryam Rahman" autocomplete="off" />
+                    <span asp-validation-for="Input.StudentName" class="field-error"></span>
+                </div>
+                @foreach (var f in fields)
+                {
+                    var value = (double)typeof(PredictModel.PredictionInput).GetProperty(f.Name)!.GetValue(Model.Input)!;
+                    <div class="field">
+                        <label for="Input_@f.Name">@f.Label</label>
+                        <div style="display:grid;grid-template-columns:1fr 90px;gap:10px;align-items:center">
+                            <input type="range" min="0" max="@f.Max" step="@f.Step" value="@value" data-sync="Input_@f.Name" aria-label="@f.Label slider" />
+                            <input type="number" id="Input_@f.Name" name="Input.@f.Name" min="0" max="@f.Max" step="@f.Step" value="@value" required />
+                        </div>
+                        <span class="hint">@f.Hint</span>
+                        @Html.ValidationMessage("Input." + f.Name, new { @class = "field-error" })
+                    </div>
+                }
+            </div>
+
+            <div class="actions" style="margin-top:20px">
+                <button type="submit" class="btn primary">Predict final score</button>
+                <span class="muted">Quick fill:</span>
+                <button type="button" class="btn small" data-profile="96,18,90,88,84">High achiever</button>
+                <button type="button" class="btn small" data-profile="84,10,72,67,64">Typical student</button>
+                <button type="button" class="btn small" data-profile="62,3,52,46,44">Struggling student</button>
+            </div>
+        </form>
+
+        <div class="card">
+            <h2>How the prediction works</h2>
+            <p class="sub">Linear Regression trained on 320 historical students</p>
+            <ol class="tips">
+                <li>ASP.NET Core sends the five values to <code>ml/predict.py</code> as JSON.</li>
+                <li>Python clips the values to valid ranges and applies the trained model:<br />
+                    <span class="muted">score = b₀ + Σ wᵢ · xᵢ</span></li>
+                <li>The score is mapped to a band:
+                    <div style="margin-top:6px;display:flex;flex-direction:column;gap:6px">
+                        <span><partial name="_CategoryBadge" model="@("Excellent")" /> 85 and above</span>
+                        <span><partial name="_CategoryBadge" model="@("Good")" /> 70 – 84.9</span>
+                        <span><partial name="_CategoryBadge" model="@("Average")" /> 55 – 69.9</span>
+                        <span><partial name="_CategoryBadge" model="@("At Risk")" /> below 55</span>
+                    </div>
+                </li>
+                <li>The result and an error band (± RMSE) are stored in SQLite.</li>
+            </ol>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('input[type=range][data-sync]').forEach(range => {
+        const box = document.getElementById(range.dataset.sync);
+        range.addEventListener('input', () => box.value = range.value);
+        box.addEventListener('input', () => range.value = box.value);
+    });
+    const names = ['Attendance', 'StudyHours', 'AssignmentAvg', 'QuizAvg', 'PreviousExam'];
+    document.querySelectorAll('[data-profile]').forEach(btn => btn.addEventListener('click', () => {
+        btn.dataset.profile.split(',').forEach((v, i) => {
+            const box = document.getElementById('Input_' + names[i]);
+            box.value = v;
+            box.dispatchEvent(new Event('input'));
+        });
+    }));
+</script>
+}

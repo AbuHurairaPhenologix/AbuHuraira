@@ -1,0 +1,16 @@
+# ---- .NET ----
+[Bb]in/
+[Oo]bj/
+*.user
+.vs/
+.idea/
+
+# ---- Runtime data ----
+**/App_Data/
+
+# ---- Python ----
+__pycache__/
+.venv/
+
+# ---- Trained model (re-created by ml/train_model.py) ----
+ml/model/model.joblib

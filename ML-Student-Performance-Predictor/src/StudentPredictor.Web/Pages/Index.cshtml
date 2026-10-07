@@ -1,0 +1,142 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var m = Model.Metrics;
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Predicted final exam performance for the current cohort, scored by the trained regression model.</p>
+        </div>
+        <a class="btn primary" href="/Predict">✎ New prediction</a>
+    </div>
+
+    <div class="grid g-4">
+        <div class="card kpi">
+            <div class="kpi-accent"></div>
+            <div class="kpi-label">Total students</div>
+            <div class="kpi-value">@Model.TotalStudents</div>
+            <div class="kpi-note">records in the dataset</div>
+        </div>
+        <div class="card kpi">
+            <div class="kpi-accent" style="background:var(--aqua)"></div>
+            <div class="kpi-label">Average predicted score</div>
+            <div class="kpi-value">@Model.AveragePredicted.ToString("0.0")</div>
+            <div class="kpi-note">actual average @Model.AverageActual.ToString("0.0")</div>
+        </div>
+        <div class="card kpi">
+            <div class="kpi-accent" style="background:var(--red)"></div>
+            <div class="kpi-label">Students at risk</div>
+            <div class="kpi-value">@Model.AtRisk</div>
+            <div class="kpi-note">predicted score below 55 · @((100.0 * Model.AtRisk / Math.Max(Model.TotalStudents, 1)).ToString("0.0"))% of cohort</div>
+        </div>
+        <div class="card kpi">
+            <div class="kpi-accent" style="background:var(--violet)"></div>
+            <div class="kpi-label">Model error (MAE)</div>
+            <div class="kpi-value">±@(m?.Mae.ToString("0.00") ?? "–")</div>
+            <div class="kpi-note">points on unseen test data · R² @(m?.R2.ToString("0.00") ?? "–")</div>
+        </div>
+    </div>
+
+    <div class="grid g-2">
+        <div class="card">
+            <h2>Performance categories</h2>
+            <p class="sub">Number of students in each predicted band</p>
+            <div class="chart-box"><canvas id="categoryChart" aria-label="Students per predicted category"></canvas></div>
+        </div>
+        <div class="card">
+            <h2>Predicted score distribution</h2>
+            <p class="sub">Students per 5-point score range, coloured by category band</p>
+            <div class="legend"><span><i style="background:#d03b3b"></i>At Risk &lt;55</span><span><i style="background:#bf8410"></i>Average 55–70</span><span><i style="background:#3987e5"></i>Good 70–85</span><span><i style="background:#199e70"></i>Excellent ≥85</span></div>
+            <div class="chart-box"><canvas id="histChart" aria-label="Histogram of predicted scores"></canvas></div>
+        </div>
+    </div>
+
+    <div class="grid g-2">
+        <div class="card">
+            <h2>Recent predictions</h2>
+            <p class="sub">Latest entries from the prediction form</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Student</th><th>When</th><th class="r">Predicted</th><th>Category</th></tr></thead>
+                    <tbody>
+                    @foreach (var p in Model.RecentPredictions)
+                    {
+                        <tr>
+                            <td><a href="/Result/@p.Id">@p.StudentName</a></td>
+                            <td class="muted">@p.CreatedAt.ToString("dd MMM, HH:mm")</td>
+                            <td class="r">@p.PredictedScore.ToString("0.0")</td>
+                            <td><partial name="_CategoryBadge" model="p.Category" /></td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <h2>Lowest predicted scores</h2>
+            <p class="sub">Students who would benefit most from early support</p>
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Student</th><th class="r">Attendance</th><th class="r">Study h/wk</th><th class="r">Predicted</th></tr></thead>
+                    <tbody>
+                    @foreach (var s in Model.AtRiskStudents)
+                    {
+                        <tr>
+                            <td>@s.Name <span class="muted">· @s.StudentNumber</span></td>
+                            <td class="r">@s.Attendance.ToString("0")%</td>
+                            <td class="r">@s.StudyHours.ToString("0.0")</td>
+                            <td class="r">@s.PredictedScore?.ToString("0.0")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div class="actions" style="margin-top:12px"><a class="btn small" href="/Students?category=At%20Risk">View all at-risk students →</a></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    const counts = @Json.Serialize(Model.CategoryCounts);
+    const cats = Object.keys(counts);
+    new Chart(document.getElementById('categoryChart'), {
+        type: 'bar',
+        data: {
+            labels: cats,
+            datasets: [{
+                label: 'Students',
+                data: cats.map(c => counts[c]),
+                backgroundColor: cats.map(c => CATEGORY_COLORS[c]),
+                borderRadius: 4, borderSkipped: 'start', maxBarThickness: 64
+            }]
+        },
+        options: {
+            plugins: { legend: { display: false } },
+            scales: { x: { grid: { display: false } }, y: { beginAtZero: true, title: axisTitle('Students') } }
+        }
+    });
+
+    const hist = @Json.Serialize(Model.ScoreHistogram);
+    const binStart = i => 30 + i * 5;
+    const binLabels = hist.map((_, i) => i === 0 ? '<35' : `${binStart(i)}–${binStart(i) + 5}`);
+    const binCategory = i => binStart(i) >= 85 ? 'Excellent' : binStart(i) >= 70 ? 'Good' : binStart(i) >= 55 ? 'Average' : 'At Risk';
+    new Chart(document.getElementById('histChart'), {
+        type: 'bar',
+        data: {
+            labels: binLabels,
+            datasets: [{ label: 'Students', data: hist, backgroundColor: hist.map((_, i) => CATEGORY_COLORS[binCategory(i)]), borderRadius: 4, borderSkipped: 'start', categoryPercentage: 0.94, barPercentage: 0.96 }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { title: items => `Score ${items[0].label} · ${binCategory(items[0].dataIndex)}` } }
+            },
+            scales: { x: { grid: { display: false }, title: axisTitle('Predicted score') }, y: { beginAtZero: true, title: axisTitle('Students') } }
+        }
+    });
+</script>
+}

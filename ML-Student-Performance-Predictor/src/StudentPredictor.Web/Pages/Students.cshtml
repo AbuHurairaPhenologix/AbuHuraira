@@ -1,0 +1,85 @@
+@page
+@model StudentsModel
+@{
+    ViewData["Title"] = "Student Records";
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Student Records</h1>
+            <p>The training dataset with each student's actual final score next to the model's prediction.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <form method="get" class="toolbar">
+            <input type="search" name="Search" value="@Model.Search" placeholder="Search name or student ID…" />
+            <select name="Category">
+                <option value="">All categories</option>
+                @foreach (var c in IndexModel.Categories)
+                {
+                    <option value="@c" selected="@(Model.Category == c)">@c</option>
+                }
+            </select>
+            <select name="Programme">
+                <option value="">All programmes</option>
+                @foreach (var pr in Model.Programmes)
+                {
+                    <option value="@pr" selected="@(Model.Programme == pr)">@pr</option>
+                }
+            </select>
+            <button class="btn" type="submit">Filter</button>
+            <a class="btn small" href="/Students">Reset</a>
+            <span class="muted" style="margin-left:auto">@Model.TotalMatches students · mean absolute error @Model.MatchMae.ToString("0.00")</span>
+        </form>
+    </div>
+
+    <div class="card">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th><th>Name</th><th>Programme</th>
+                    <th class="r">Attendance</th><th class="r">Study h/wk</th><th class="r">Assign.</th><th class="r">Quiz</th><th class="r">Prev. exam</th>
+                    <th class="r">Actual</th><th class="r">Predicted</th><th class="r">Error</th><th>Category</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var s in Model.Students)
+                {
+                    var error = (s.PredictedScore ?? 0) - s.FinalScore;
+                    <tr>
+                        <td class="muted">@s.StudentNumber</td>
+                        <td style="color:var(--ink-1)">@s.Name</td>
+                        <td>@s.Programme</td>
+                        <td class="r">@s.Attendance.ToString("0.0")%</td>
+                        <td class="r">@s.StudyHours.ToString("0.0")</td>
+                        <td class="r">@s.AssignmentAvg.ToString("0.0")</td>
+                        <td class="r">@s.QuizAvg.ToString("0.0")</td>
+                        <td class="r">@s.PreviousExam.ToString("0.0")</td>
+                        <td class="r">@s.FinalScore.ToString("0.0")</td>
+                        <td class="r" style="color:var(--ink-1)">@s.PredictedScore?.ToString("0.0")</td>
+                        <td class="r muted">@error.ToString("+0.0;−0.0;0.0")</td>
+                        <td><partial name="_CategoryBadge" model="s.Category" /></td>
+                    </tr>
+                }
+                @if (Model.Students.Count == 0)
+                {
+                    <tr><td colspan="12" class="muted">No students match the filter.</td></tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="pager">
+            @if (Model.PageNumber > 1)
+            {
+                <a class="btn small" href="@Model.PageLink(Model.PageNumber - 1)">← Previous</a>
+            }
+            <span>Page @Model.PageNumber of @Model.TotalPages</span>
+            @if (Model.PageNumber < Model.TotalPages)
+            {
+                <a class="btn small" href="@Model.PageLink(Model.PageNumber + 1)">Next →</a>
+            }
+        </div>
+    </div>
+</div>
