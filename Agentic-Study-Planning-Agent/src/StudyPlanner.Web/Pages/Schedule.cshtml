@@ -1,0 +1,86 @@
+@page
+@model ScheduleModel
+@using StudyPlanner.Web.Services
+@{
+    ViewData["Title"] = "Weekly Schedule";
+    var r = Model.Result;
+    var today = PlanningAgentService.Today;
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Weekly Schedule</h1>
+            <p>The next seven days as planned by the agent. Exams are marked; the exam day itself is kept free of study sessions for that subject.</p>
+        </div>
+        <a class="btn" href="/Plan">⚙ Adjust availability</a>
+    </div>
+
+    @if (r is null)
+    {
+        <div class="card"><p class="sub">No plan yet. <a href="/Plan">Run the agent.</a></p></div>
+    }
+    else
+    {
+        <div class="legend">
+            @foreach (var s in Model.Subjects.Where(s => r.Sessions.Any(x => x.SubjectId == s.Id)))
+            {
+                <span><i style="background:@SubjectColors.Get(s.ColorIndex)"></i>@s.Name · @r.Sessions.Where(x => x.SubjectId == s.Id).Sum(x => x.Hours).ToString("0.#") h</span>
+            }
+        </div>
+
+        <div class="calendar">
+            @for (var i = 0; i < r.Days.Count; i++)
+            {
+                var date = DateOnly.Parse(r.Days[i]);
+                var sessions = r.Sessions.Where(x => x.Date == r.Days[i]).ToList();
+                var exams = Model.Subjects.Where(s => s.ExamDate == date).ToList();
+                <div class="day @(date == today ? "today" : "")">
+                    <div class="day-head">
+                        <strong>@date.ToString("dddd")</strong>
+                        <span>@date.ToString("dd MMM")</span>
+                    </div>
+                    @foreach (var e in exams)
+                    {
+                        <div class="exam-chip">📝 Exam: @e.Name</div>
+                    }
+                    @foreach (var s in sessions)
+                    {
+                        <div class="session" style="border-left-color:@Model.ColorOf(s.SubjectId)">
+                            <span class="t">@s.Start – @s.End</span>
+                            <span class="s">@s.Subject</span>
+                            <span class="h">@s.Hours.ToString("0.#") h</span>
+                        </div>
+                    }
+                    @if (sessions.Count == 0)
+                    {
+                        <div class="rest">No study planned</div>
+                    }
+                    <div class="day-foot">@sessions.Sum(x => x.Hours).ToString("0.#") of @r.Capacity[i].ToString("0.#") h used</div>
+                </div>
+            }
+        </div>
+
+        @if (r.Conflicts.Count > 0)
+        {
+            <div class="card">
+                <h2>Conflicts the agent resolved</h2>
+                <p class="sub">Detected during this plan and how the schedule handles them</p>
+                <table>
+                    <thead><tr><th>Severity</th><th>Type</th><th>Problem</th><th>Agent's resolution</th></tr></thead>
+                    <tbody>
+                    @foreach (var c in r.Conflicts)
+                    {
+                        var severityCss = "sev-" + c.Severity;
+                        <tr>
+                            <td><partial name="_Badge" model="(c.Severity, severityCss)" /></td>
+                            <td style="color:var(--ink-1)">@c.Type</td>
+                            <td>@c.Message</td>
+                            <td class="muted">@c.Resolution</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>

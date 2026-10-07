@@ -1,0 +1,13 @@
+# ---- .NET ----
+[Bb]in/
+[Oo]bj/
+*.user
+.vs/
+.idea/
+
+# ---- Runtime data ----
+**/App_Data/
+
+# ---- Python ----
+__pycache__/
+.venv/

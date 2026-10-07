@@ -1,0 +1,48 @@
+@{
+    var path = Context.Request.Path.Value ?? "/";
+    string Active(string prefix) =>
+        (prefix == "/" ? path == "/" : path.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) ? "nav-link active" : "nav-link";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] · Study Planning Agent</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="~/lib/chart.umd.min.js"></script>
+    <script src="~/js/charts.js" asp-append-version="true"></script>
+</head>
+<body>
+<div class="shell">
+    <aside class="sidebar">
+        <div class="sidebar-inner">
+            <div class="brand">
+                <div class="brand-mark">SA</div>
+                <div>
+                    <div class="brand-title">Study Planning Agent</div>
+                    <div class="brand-sub">Agentic AI · Optimisation</div>
+                </div>
+            </div>
+            <a class="@Active("/")" href="/"><span class="ico">▦</span> Dashboard</a>
+            <a class="@Active("/Subjects")" href="/Subjects"><span class="ico">☰</span> Subjects &amp; Tasks</a>
+            <a class="@Active("/Plan")" href="/Plan"><span class="ico">⚙</span> Generate Study Plan</a>
+            <a class="@Active("/Schedule")" href="/Schedule"><span class="ico">▤</span> Weekly Schedule</a>
+            <a class="@Active("/Activity")" href="/Activity"><span class="ico">◷</span> Agent Activity</a>
+            <div class="sidebar-foot">
+                ASP.NET Core · Python<br />
+                Priority-score optimisation
+            </div>
+        </div>
+    </aside>
+    <main class="main">
+        @if (TempData["AgentMessage"] is string message)
+        {
+            <div style="padding:20px 28px 0;max-width:1400px"><div class="alert">🤖 @message</div></div>
+        }
+        @RenderBody()
+    </main>
+</div>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,103 @@
+@page "{id:int?}"
+@model ActivityModel
+@{
+    ViewData["Title"] = "Agent Activity";
+    var run = Model.Selected;
+    var r = Model.SelectedResult;
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Agent Activity &amp; Optimisation Summary</h1>
+            <p>Every time an input changes the agent runs again. Each run records what it analysed, decided and changed.</p>
+        </div>
+    </div>
+
+    <div class="grid" style="grid-template-columns:320px minmax(0,1fr)">
+        <div class="card" style="align-self:start">
+            <h2>Run history</h2>
+            <p class="sub">@Model.Runs.Count most recent agent runs</p>
+            <div class="run-list">
+                @foreach (var x in Model.Runs)
+                {
+                    <a class="run-item @(x.Id == run?.Id ? "active" : "")" href="/Activity/@x.Id">
+                        <div class="title">#@x.Id · @x.Trigger</div>
+                        <div class="meta">@x.CreatedAt.ToString("dd MMM, HH:mm:ss") · @x.AllocatedHours.ToString("0.#") h · @x.ConflictCount conflict(s) · @(x.IsReplan ? "replan" : "first plan")</div>
+                    </a>
+                }
+            </div>
+        </div>
+
+        @if (run is not null && r is not null)
+        {
+            <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+                <div class="grid g-4">
+                    <div class="card kpi">
+                        <div class="kpi-label">Hours allocated</div>
+                        <div class="kpi-value">@r.Summary.AllocatedHours.ToString("0.#") h</div>
+                        <div class="kpi-note">of @r.Summary.AvailableHours.ToString("0.#") h available</div>
+                    </div>
+                    <div class="card kpi">
+                        <div class="kpi-label">Weekly demand</div>
+                        <div class="kpi-value">@r.Summary.WeeklyDemand.ToString("0.#") h</div>
+                        <div class="kpi-note">workload ratio @r.Summary.WorkloadRatio.ToString("0.00")</div>
+                    </div>
+                    <div class="card kpi">
+                        <div class="kpi-label">Sessions</div>
+                        <div class="kpi-value">@r.Summary.SessionCount</div>
+                        <div class="kpi-note">over @r.Days.Count days</div>
+                    </div>
+                    <div class="card kpi">
+                        <div class="kpi-label">Conflicts</div>
+                        <div class="kpi-value">@r.Summary.ConflictCount</div>
+                        <div class="kpi-note">detected and handled</div>
+                    </div>
+                </div>
+
+                @if (r.Changes.Count > 0)
+                {
+                    <div class="card">
+                        <h2>What changed in this replan</h2>
+                        <p class="sub">Trigger: @run.Trigger</p>
+                        <table>
+                            <thead><tr><th>Subject</th><th class="r">Before</th><th class="r">After</th><th class="r">Change</th><th>Reason</th></tr></thead>
+                            <tbody>
+                            @foreach (var c in r.Changes)
+                            {
+                                <tr>
+                                    <td style="color:var(--ink-1)"><span class="swatch" style="background:@Model.ColorOf(c.SubjectId)"></span>@c.Subject</td>
+                                    <td class="r">@c.Before.ToString("0.#") h</td>
+                                    <td class="r">@c.After.ToString("0.#") h</td>
+                                    <td class="r" style="color:var(--ink-1)">@c.Delta.ToString("+0.#;−0.#;0") h</td>
+                                    <td class="muted">@c.Reason</td>
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+
+                <div class="card">
+                    <h2>Decision log · run #@run.Id</h2>
+                    <p class="sub">@run.CreatedAt.ToString("dddd dd MMM yyyy, HH:mm:ss") · trigger: @run.Trigger</p>
+                    <div style="padding-left:6px">
+                        @foreach (var step in r.Steps)
+                        {
+                            var statusLabel = step.Status == "ok" ? "done" : "attention";
+                            <div class="step @step.Status">
+                                <h3>@step.Action <partial name="_Badge" model="(statusLabel, step.Status)" /></h3>
+                                <p>@step.Summary</p>
+                                <ul>
+                                    @foreach (var d in step.Details)
+                                    {
+                                        <li>@d</li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

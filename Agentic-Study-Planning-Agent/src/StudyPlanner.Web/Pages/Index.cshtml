@@ -1,0 +1,149 @@
+@page
+@model IndexModel
+@using StudyPlanner.Web.Services
+@{
+    ViewData["Title"] = "Dashboard";
+    var r = Model.Result;
+    var s = r?.Summary;
+    var today = PlanningAgentService.Today;
+    var active = r?.Subjects.Where(x => x.Status == "Active").ToList() ?? [];
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Dashboard</h1>
+            <p>The agent's current plan for @today.ToString("dddd d MMMM") – @today.AddDays(6).ToString("dddd d MMMM yyyy").</p>
+        </div>
+        <a class="btn primary" href="/Schedule">▤ Open weekly schedule</a>
+    </div>
+
+    @if (s is null)
+    {
+        <div class="card"><p class="sub">No plan yet. <a href="/Plan">Run the agent.</a></p></div>
+    }
+    else
+    {
+        <div class="grid g-5">
+            <div class="card kpi">
+                <div class="kpi-accent"></div>
+                <div class="kpi-label">Available this week</div>
+                <div class="kpi-value">@s.AvailableHours.ToString("0.#") h</div>
+                <div class="kpi-note">from your weekly availability</div>
+            </div>
+            <div class="card kpi">
+                <div class="kpi-accent" style="background:var(--aqua)"></div>
+                <div class="kpi-label">Hours allocated</div>
+                <div class="kpi-value">@s.AllocatedHours.ToString("0.#") h</div>
+                <div class="kpi-note">in @s.SessionCount study sessions</div>
+            </div>
+            <div class="card kpi">
+                <div class="kpi-accent" style="background:#c98500"></div>
+                <div class="kpi-label">Current workload</div>
+                <div class="kpi-value">@((s.WorkloadRatio * 100).ToString("0"))%</div>
+                <div class="kpi-note">@PlanPageModel.WorkloadLabel(s.WorkloadRatio) · @s.WeeklyDemand.ToString("0.#") h needed / @s.AvailableHours.ToString("0.#") h free</div>
+            </div>
+            <div class="card kpi">
+                <div class="kpi-accent" style="background:var(--red)"></div>
+                <div class="kpi-label">Highest priority</div>
+                <div class="kpi-value" style="font-size:19px;line-height:1.25;min-height:34px">@(s.TopSubject ?? "–")</div>
+                <div class="kpi-note">priority score @s.TopScore.ToString("0.00")</div>
+            </div>
+            <div class="card kpi">
+                <div class="kpi-accent" style="background:var(--violet)"></div>
+                <div class="kpi-label">Conflicts handled</div>
+                <div class="kpi-value">@s.ConflictCount</div>
+                <div class="kpi-note"><a href="/Activity">see the agent's decisions →</a></div>
+            </div>
+        </div>
+
+        <div class="grid g-3">
+            <div class="card span-2">
+                <h2>Hours needed vs allocated this week</h2>
+                <p class="sub">Needed = remaining work spread evenly until the exam. Allocated = what the agent could fit, by priority.</p>
+                <div class="chart-box"><canvas id="allocChart" aria-label="Hours needed and allocated per subject"></canvas></div>
+            </div>
+            <div class="card">
+                <h2>Today</h2>
+                <p class="sub">@today.ToString("dddd d MMMM")</p>
+                @if (Model.TodaySessions.Count == 0)
+                {
+                    <p class="muted">No study sessions planned today.</p>
+                }
+                <div style="display:flex;flex-direction:column;gap:8px">
+                    @foreach (var t in Model.TodaySessions)
+                    {
+                        <div class="session" style="border-left-color:@Model.ColorOf(t.SubjectId)">
+                            <span class="t">@t.Start – @t.End</span>
+                            <span class="s">@t.Subject</span>
+                            <span class="h">@t.Hours.ToString("0.#") h</span>
+                        </div>
+                    }
+                </div>
+                <div class="muted" style="font-size:12.5px;margin-top:14px">
+                    Last plan: run #@Model.Run!.Id · @Model.Run.CreatedAt.ToString("dd MMM, HH:mm")<br />
+                    Trigger: @Model.Run.Trigger
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Upcoming deadlines</h2>
+            <p class="sub">Exams and deadlines in date order, with the agent's priority score</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr><th>Subject</th><th>Exam</th><th class="r">Days left</th><th>Priority</th><th>Progress</th><th class="r">Score</th><th class="r">This week</th></tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var d in Model.UpcomingDeadlines)
+                    {
+                        var plan = r!.Subjects.FirstOrDefault(x => x.Id == d.Id);
+                        var daysLeft = d.ExamDate.DayNumber - today.DayNumber;
+                        <tr>
+                            <td style="color:var(--ink-1)"><span class="swatch" style="background:@SubjectColors.Get(d.ColorIndex)"></span>@d.Name</td>
+                            <td>@d.ExamDate.ToString("ddd dd MMM")</td>
+                            <td class="r" style="color:@(daysLeft <= 5 ? "var(--ink-1)" : "inherit")">@daysLeft</td>
+                            <td><partial name="_Badge" model="(d.Priority, PlanPageModel.PriorityCss(d.Priority))" /></td>
+                            <td>
+                                <div style="display:flex;gap:10px;align-items:center">
+                                    <div class="progress" style="flex:1"><div style="width:@d.Progress%"></div></div>
+                                    <span class="num" style="width:36px">@d.Progress%</span>
+                                </div>
+                            </td>
+                            <td class="r">@plan?.Score.ToString("0.00")</td>
+                            <td class="r" style="color:var(--ink-1)">@plan?.AllocatedHours.ToString("0.#") h</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    @if (active.Count > 0)
+    {
+        <script>
+            const subjects = @Json.Serialize(active.Select(x => new { name = x.Name, needed = x.WeeklyDemand, allocated = x.AllocatedHours }));
+            new Chart(document.getElementById('allocChart'), {
+                type: 'bar',
+                data: {
+                    labels: subjects.map(s => s.name),
+                    datasets: [
+                        { label: 'Needed', data: subjects.map(s => s.needed), backgroundColor: '#5f5e5a', borderRadius: 4, borderSkipped: 'start', maxBarThickness: 16 },
+                        { label: 'Allocated', data: subjects.map(s => s.allocated), backgroundColor: '#3987e5', borderRadius: 4, borderSkipped: 'start', maxBarThickness: 16 }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { position: 'top', align: 'end' },
+                        tooltip: { callbacks: { label: c => `${c.dataset.label}: ${c.parsed.x} h` } }
+                    },
+                    scales: { x: { beginAtZero: true, title: axisTitle('Hours this week') }, y: { grid: { display: false } } }
+                }
+            });
+        </script>
+    }
+}

@@ -1,0 +1,94 @@
+@page
+@model StudyPlanner.Web.Pages.Subjects.IndexModel
+@using StudyPlanner.Web.Services
+@{
+    ViewData["Title"] = "Subjects & Tasks";
+    var today = PlanningAgentService.Today;
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Subjects &amp; Tasks</h1>
+            <p>Every change here triggers the agent, which recalculates the weekly plan automatically.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Your subjects</h2>
+        <p class="sub">Remaining work = total study hours × (1 − progress). Update progress after each study session.</p>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                <tr>
+                    <th>Subject</th><th>Exam / deadline</th><th class="r">Days left</th><th>Priority</th><th class="r">Difficulty</th>
+                    <th class="r">Total h</th><th class="r">Remaining h</th><th>Progress</th><th class="r">Score</th><th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var s in Model.Subjects)
+                {
+                    var plan = Model.Result?.Subjects.FirstOrDefault(x => x.Id == s.Id);
+                    var daysLeft = s.ExamDate.DayNumber - today.DayNumber;
+                    <tr>
+                        <td style="color:var(--ink-1)"><span class="swatch" style="background:@SubjectColors.Get(s.ColorIndex)"></span>@s.Name</td>
+                        <td>@s.ExamDate.ToString("ddd dd MMM yyyy")</td>
+                        <td class="r">@(daysLeft < 0 ? "passed" : daysLeft.ToString())</td>
+                        <td><partial name="_Badge" model="(s.Priority, PlanPageModel.PriorityCss(s.Priority))" /></td>
+                        <td class="r" title="Difficulty @s.Difficulty of 5"><span style="color:var(--ink-1)">@(new string('●', s.Difficulty))</span><span style="color:var(--line-strong)">@(new string('●', 5 - s.Difficulty))</span> <span class="muted">@s.Difficulty/5</span></td>
+                        <td class="r">@s.TotalHours.ToString("0.#")</td>
+                        <td class="r">@((s.TotalHours * (100 - s.Progress) / 100).ToString("0.#"))</td>
+                        <td>
+                            <form method="post" asp-page-handler="Progress" asp-route-id="@s.Id" style="display:flex;gap:6px;align-items:center">
+                                <input type="number" name="progress" value="@s.Progress" min="0" max="100" step="5" style="width:72px;padding:5px 8px" aria-label="Progress for @s.Name" />
+                                <span class="muted">%</span>
+                                <button class="btn small" type="submit" title="Save progress and replan">Update</button>
+                            </form>
+                        </td>
+                        <td class="r" style="color:var(--ink-1)">@plan?.Score.ToString("0.00")</td>
+                        <td class="r" style="white-space:nowrap">
+                            <a class="btn small" href="/Subjects/Edit/@s.Id">Edit</a>
+                            <form method="post" asp-page-handler="Delete" asp-route-id="@s.Id" style="display:inline" onsubmit="return confirm('Remove @s.Name? The agent will replan without it.')">
+                                <button class="btn small" type="submit">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <form method="post" asp-page-handler="Add" class="card">
+        <h2>Add a subject or task</h2>
+        <p class="sub">The agent includes it in the plan immediately</p>
+        <div asp-validation-summary="All" class="validation-summary-errors"></div>
+        <div class="grid g-3" style="gap:14px 20px">
+            <div class="field">
+                <label asp-for="NewSubject.Name">Name</label>
+                <input asp-for="NewSubject.Name" placeholder="e.g. Computer Networks" />
+            </div>
+            <div class="field">
+                <label asp-for="NewSubject.ExamDate"></label>
+                <input asp-for="NewSubject.ExamDate" type="date" />
+            </div>
+            <div class="field">
+                <label asp-for="NewSubject.Priority">Priority</label>
+                <select asp-for="NewSubject.Priority" asp-items="@(new SelectList(StudyPlanner.Web.Pages.Subjects.IndexModel.Priorities))"></select>
+            </div>
+            <div class="field">
+                <label asp-for="NewSubject.Difficulty">Difficulty (1 = easy, 5 = very hard)</label>
+                <input asp-for="NewSubject.Difficulty" type="number" min="1" max="5" />
+            </div>
+            <div class="field">
+                <label asp-for="NewSubject.TotalHours"></label>
+                <input asp-for="NewSubject.TotalHours" type="number" min="1" max="200" step="0.5" />
+                <span class="hint">Estimated hours to master the whole syllabus</span>
+            </div>
+            <div class="field">
+                <label asp-for="NewSubject.Progress">Current progress (%)</label>
+                <input asp-for="NewSubject.Progress" type="number" min="0" max="100" step="5" />
+            </div>
+        </div>
+        <div class="actions" style="margin-top:18px"><button class="btn primary" type="submit">Add and replan</button></div>
+    </form>
+</div>

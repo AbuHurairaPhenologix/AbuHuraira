@@ -1,0 +1,105 @@
+@page
+@model PlanModel
+@{
+    ViewData["Title"] = "Generate Study Plan";
+    var r = Model.Result;
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Generate Study Plan</h1>
+            <p>Set when you can study, then let the agent run its decision cycle. Changing availability replans automatically.</p>
+        </div>
+        <form method="post" asp-page-handler="Run">
+            <button class="btn primary" type="submit">▶ Run planning agent</button>
+        </form>
+    </div>
+
+    <form method="post" asp-page-handler="Availability" class="card">
+        <h2>Weekly availability</h2>
+        <p class="sub">Study hours per weekday and when the first session starts</p>
+        <div class="avail-grid">
+            @for (var i = 0; i < Model.Availability.Count; i++)
+            {
+                var a = Model.Availability[i];
+                <div class="field">
+                    <label for="h@(i)">@PlanModel.DayNames[a.DayOfWeek]</label>
+                    <input type="hidden" name="Availability[@i].DayOfWeek" value="@a.DayOfWeek" />
+                    <input id="h@(i)" type="number" name="Availability[@i].Hours" value="@a.Hours" min="0" max="14" step="0.5" aria-label="Hours on @PlanModel.DayNames[a.DayOfWeek]" />
+                    <input type="time" name="Availability[@i].StartTime" value="@a.StartTime" aria-label="Start time on @PlanModel.DayNames[a.DayOfWeek]" />
+                </div>
+            }
+        </div>
+        <div class="actions" style="margin-top:14px">
+            <button class="btn" type="submit">Save availability and replan</button>
+            <span class="muted">Total: @Model.Availability.Sum(a => a.Hours).ToString("0.#") h per week</span>
+        </div>
+    </form>
+
+    @if (r is not null)
+    {
+        <div class="card">
+            <h2>Agent decision cycle</h2>
+            <p class="sub">Run #@Model.Run!.Id · @Model.Run.CreatedAt.ToString("dd MMM yyyy, HH:mm") · trigger: @Model.Run.Trigger</p>
+            <div class="cycle">
+                @for (var i = 0; i < PlanModel.Cycle.Length; i++)
+                {
+                    var (action, purpose) = PlanModel.Cycle[i];
+                    var step = r.Steps.FirstOrDefault(x => x.Action == action);
+                    <div class="cycle-step @(step?.Status ?? "skipped")">
+                        <span class="num">Step @(i + 1)</span>
+                        <span class="name">@action</span>
+                        <span class="muted" style="font-size:12px">@purpose</span>
+                        <span class="text">@(step?.Summary ?? "Not needed: this is the first plan.")</span>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Priority scores and allocation</h2>
+            <p class="sub">PriorityScore = PriorityWeight × DifficultyWeight × UrgencyWeight. Free hours are shared in proportion to the score.</p>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Subject</th><th class="r">Days left</th><th class="r">Priority w.</th><th class="r">Difficulty w.</th><th class="r">Urgency w.</th>
+                        <th class="r">Score</th><th class="r">Needed this week</th><th class="r">Allocated</th><th>Coverage</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var s in r.Subjects)
+                    {
+                        <tr>
+                            <td style="color:var(--ink-1)"><span class="swatch" style="background:@Model.ColorOf(s.Id)"></span>@s.Name
+                                @if (s.Status != "Active")
+                                {
+                                    <span class="muted"> · @s.Status</span>
+                                }
+                            </td>
+                            <td class="r">@s.DaysLeft</td>
+                            <td class="r">@s.PriorityWeight.ToString("0.0")</td>
+                            <td class="r">@s.DifficultyWeight.ToString("0.0")</td>
+                            <td class="r">@s.UrgencyWeight.ToString("0.00")</td>
+                            <td class="r" style="color:var(--ink-1);font-weight:600">@s.Score.ToString("0.00")</td>
+                            <td class="r">@s.WeeklyDemand.ToString("0.#") h</td>
+                            <td class="r" style="color:var(--ink-1)">@s.AllocatedHours.ToString("0.#") h</td>
+                            <td>
+                                <div style="display:flex;gap:10px;align-items:center">
+                                    <div class="progress" style="flex:1"><div style="width:@(Math.Min(100, s.Coverage * 100).ToString("0"))%;background:@Model.ColorOf(s.Id)"></div></div>
+                                    <span class="num" style="width:40px">@((s.Coverage * 100).ToString("0"))%</span>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div class="grid g-3" style="margin-top:16px;gap:12px">
+                <div class="equation">PriorityWeight: Low 1.0 · Medium 1.5 · High 2.0 · Critical 2.5</div>
+                <div class="equation">DifficultyWeight = 0.6 + 0.2 × difficulty  (1 → 0.8, 5 → 1.6)</div>
+                <div class="equation">UrgencyWeight = 1 + 3 · e^(−daysLeft / 7)</div>
+            </div>
+        </div>
+    }
+</div>

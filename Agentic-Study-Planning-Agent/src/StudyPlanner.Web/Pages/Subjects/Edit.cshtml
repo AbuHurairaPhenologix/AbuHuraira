@@ -1,0 +1,47 @@
+@page "{id:int}"
+@model StudyPlanner.Web.Pages.Subjects.EditModel
+@{
+    ViewData["Title"] = "Edit Subject";
+}
+<div class="page">
+    <div class="page-head">
+        <div>
+            <h1>Edit @Model.Input.Name</h1>
+            <p>Saving changes makes the agent recalculate the weekly plan.</p>
+        </div>
+        <a class="btn" href="/Subjects">← Back to subjects</a>
+    </div>
+
+    <form method="post" class="card" style="max-width:820px">
+        <div asp-validation-summary="All" class="validation-summary-errors"></div>
+        <div class="form-grid">
+            <div class="field">
+                <label asp-for="Input.Name">Name</label>
+                <input asp-for="Input.Name" />
+            </div>
+            <div class="field">
+                <label asp-for="Input.ExamDate"></label>
+                <input asp-for="Input.ExamDate" type="date" />
+            </div>
+            <div class="field">
+                <label asp-for="Input.Priority">Priority</label>
+                <select asp-for="Input.Priority" asp-items="@(new SelectList(StudyPlanner.Web.Pages.Subjects.IndexModel.Priorities))"></select>
+            </div>
+            <div class="field">
+                <label asp-for="Input.Difficulty">Difficulty (1 = easy, 5 = very hard)</label>
+                <input asp-for="Input.Difficulty" type="number" min="1" max="5" />
+            </div>
+            <div class="field">
+                <label asp-for="Input.TotalHours"></label>
+                <input asp-for="Input.TotalHours" type="number" min="1" max="200" step="0.5" />
+            </div>
+            <div class="field">
+                <label asp-for="Input.Progress">Current progress (%)</label>
+                <input asp-for="Input.Progress" type="number" min="0" max="100" step="5" />
+            </div>
+        </div>
+        <div class="actions" style="margin-top:20px">
+            <button class="btn primary" type="submit">Save and replan</button>
+        </div>
+    </form>
+</div>
